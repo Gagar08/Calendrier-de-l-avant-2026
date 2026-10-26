@@ -1,0 +1,158 @@
+[
+  {
+    "jour": 1,
+    "type": "texte",
+    "titre": "Message du premier jour",
+    "texte": "Bienvenue dans ce petit calendrier de l'avent. Un petit mot doux pour commencer cette saison de douceur et de bonne humeur."
+  },
+  {
+    "jour": 2,
+    "type": "lien",
+    "titre": "Une recette simple",
+    "texte": "Un petit goût de Noël à préparer ensemble : chocolat chaud, épices et douceur.",
+    "lien": "https://example.com/recette"
+  },
+  {
+    "jour": 3,
+    "type": "texte",
+    "titre": "Blague du jour",
+    "texte": "Pourquoi le Père Noël aime-t-il les ordinateurs ? Parce qu'ils ont toujours un bon logiciel de cadeaux !"
+  },
+  {
+    "jour": 4,
+    "type": "image",
+    "titre": "Souvenir visuel",
+    "texte": "Une petite scène de vacances à garder en mémoire.",
+    "image": "images/cases/04.webp"
+  },
+  {
+    "jour": 5,
+    "type": "texte",
+    "titre": "Défi du jour",
+    "texte": "Fais un vœu pour le mois à venir et écris-le sur un petit papier. La magie commence souvent par un geste simple."
+  },
+  {
+    "jour": 6,
+    "type": "lien",
+    "titre": "Musique douce",
+    "texte": "Une playlist légère pour une soirée cocooning.",
+    "lien": "https://example.com/playlist"
+  },
+  {
+    "jour": 7,
+    "type": "texte",
+    "titre": "Citation",
+    "texte": "« Le plus beau des cadeaux, c'est le temps partagé. »"
+  },
+  {
+    "jour": 8,
+    "type": "image",
+    "titre": "Photo de famille",
+    "texte": "Une image à remplacer par un souvenir plus personnel.",
+    "image": "images/cases/08.webp"
+  },
+  {
+    "jour": 9,
+    "type": "texte",
+    "titre": "Petit défi",
+    "texte": "Passe 10 minutes à faire quelque chose de simple et agréable : thé, lecture, sieste ou promenade courte."
+  },
+  {
+    "jour": 10,
+    "type": "lien",
+    "titre": "Vidéo sympa",
+    "texte": "Un petit moment de rire pour faire passer la journée.",
+    "lien": "https://example.com/video"
+  },
+  {
+    "jour": 11,
+    "type": "texte",
+    "titre": "Pense positive",
+    "texte": "L'aventure la plus belle n'est pas toujours celle qui se voit : parfois elle se raconte dans le quotidien."
+  },
+  {
+    "jour": 12,
+    "type": "image",
+    "titre": "Souvenir d'hiver",
+    "texte": "À remplacer par une photo ou un montage personnel.",
+    "image": "images/cases/12.webp"
+  },
+  {
+    "jour": 13,
+    "type": "texte",
+    "titre": "Mise en lumière",
+    "texte": "Aujourd'hui, prends le temps de remarquer ce qui est déjà beau autour de toi."
+  },
+  {
+    "jour": 14,
+    "type": "lien",
+    "titre": "Une idée de sortie",
+    "texte": "Un petit plan simple pour changer d'air : promenade, marché de Noël ou café chaleureux.",
+    "lien": "https://example.com/plan"
+  },
+  {
+    "jour": 15,
+    "type": "texte",
+    "titre": "Petit miracle",
+    "texte": "On ne cherche pas toujours le grand événement. Une vraie bonne surprise peut être très discrète."
+  },
+  {
+    "jour": 16,
+    "type": "image",
+    "titre": "Photo à ajouter",
+    "texte": "Ajoute ici une image pour personnaliser l'expérience.",
+    "image": "images/cases/16.webp"
+  },
+  {
+    "jour": 17,
+    "type": "texte",
+    "titre": "Question du jour",
+    "texte": "Que serait la meilleure journée de décembre pour toi ?"
+  },
+  {
+    "jour": 18,
+    "type": "lien",
+    "titre": "Une petite recette",
+    "texte": "Un goûter facile à partager : biscuits maison ou mélange de douceurs.",
+    "lien": "https://example.com/gouter"
+  },
+  {
+    "jour": 19,
+    "type": "texte",
+    "titre": "Message de soutien",
+    "texte": "Tu fais déjà plus de bien que tu ne le crois. Continue, doucement mais sûrement."
+  },
+  {
+    "jour": 20,
+    "type": "image",
+    "titre": "Petit souvenir",
+    "texte": "Image temporaire à remplacer par un moment précis.",
+    "image": "images/cases/20.webp"
+  },
+  {
+    "jour": 21,
+    "type": "texte",
+    "titre": "Défi créatif",
+    "texte": "Écris une phrase qui te fait sourire aujourd'hui. Cela peut devenir un souvenir de fin d'année."
+  },
+  {
+    "jour": 22,
+    "type": "lien",
+    "titre": "Cadeau surprise",
+    "texte": "Un petit lien d'orientation à remplacer par un vrai cadeau ou une référence utile.",
+    "lien": "https://example.com/cadeau"
+  },
+  {
+    "jour": 23,
+    "type": "texte",
+    "titre": "Le mot de la fin",
+    "texte": "La magie n'est pas dans le complexe. Elle est souvent dans la simplicité et dans le fait d'être ensemble."
+  },
+  {
+    "jour": 24,
+    "type": "image",
+    "titre": "Le dernier jour",
+    "texte": "Le grand final du calendrier : un instant à célébrer, à savourer et à garder en mémoire.",
+    "image": "images/cases/24.webp"
+  }
+]

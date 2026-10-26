@@ -1,0 +1,370 @@
+:root {
+  --couleur-fond: #1e1225;
+  --couleur-case: #f5d76c;
+  --couleur-case-ouverte: #e7b33d;
+  --couleur-case-verrouillee: #8e7c8d;
+  --couleur-texte: #fff8e7;
+  --couleur-texte-fonce: #2b1b32;
+  --couleur-accent: #e84d5f;
+  --couleur-surface: rgba(34, 18, 38, 0.88);
+  --couleur-bordure: #f6e4a6;
+  --couleur-shadow: rgba(0, 0, 0, 0.28);
+  --police-base: "Press Start 2P", "Silkscreen", "Courier New", monospace;
+  --police-titre: "Press Start 2P", "Silkscreen", "Courier New", monospace;
+  --pixel-scale: 2;
+  --case-size: 32px;
+  --grid-gap: 8px;
+  --grid-padding: 14px;
+  --scene-width: 180px;
+  --scene-height: 320px;
+}
+
+@font-face {
+  font-family: "Press Start 2P";
+  src: local("Press Start 2P"), local("PressStart2P-Regular"), url("fonts/PressStart2P-Regular.ttf") format("truetype");
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Silkscreen";
+  src: local("Silkscreen"), url("fonts/Silkscreen-Regular.ttf") format("truetype");
+  font-display: swap;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  padding: clamp(10px, 2vw, 20px);
+  display: grid;
+  place-items: center;
+  overflow-x: hidden;
+  background:
+    radial-gradient(circle at top, rgba(255, 230, 150, 0.18), transparent 35%),
+    linear-gradient(180deg, #120b17 0%, var(--couleur-fond) 100%);
+  color: var(--couleur-texte);
+  font-family: var(--police-base);
+  text-transform: none;
+  line-height: 1.5;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+button,
+a {
+  font: inherit;
+}
+
+.page-shell {
+  width: min(100%, 430px);
+  padding: clamp(0.5rem, 1.2vw, 1rem) 0.35rem 1.4rem;
+}
+
+.page-header {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.eyebrow {
+  margin: 0;
+  color: #f6d26d;
+  font-size: 0.55rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+h1 {
+  margin: 0.55rem 0 0;
+  font-family: var(--police-titre);
+  font-size: clamp(0.9rem, 2vw, 1.3rem);
+  line-height: 1.5;
+  color: var(--couleur-texte);
+  text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.3);
+}
+
+.lock-message {
+  min-height: 1.2rem;
+  margin: 0 auto 0.75rem;
+  max-width: 22rem;
+  font-size: 0.48rem;
+  text-align: center;
+  color: #ffd98a;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.lock-message.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.calendar-scene {
+  width: min(calc(var(--scene-width) * var(--pixel-scale)), calc(100vw - 24px));
+  height: min(calc(var(--scene-height) * var(--pixel-scale)), calc(100vh - 210px));
+  margin: 0 auto;
+  padding: 0;
+  background: rgba(255, 255, 255, 0.03);
+  box-shadow: 0 0 0 4px rgba(255, 240, 180, 0.15), 0 16px 32px rgba(0, 0, 0, 0.18);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.calendar-grid {
+  width: var(--scene-width);
+  height: var(--scene-height);
+  display: grid;
+  grid-template-columns: repeat(4, var(--case-size));
+  grid-template-rows: repeat(6, var(--case-size));
+  gap: var(--grid-gap);
+  padding: var(--grid-padding);
+  padding-top: calc(var(--grid-padding) + 4px);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(0, 0, 0, 0.04));
+  image-rendering: pixelated;
+  -ms-interpolation-mode: nearest-neighbor;
+  transform: scale(var(--pixel-scale));
+  transform-origin: center center;
+}
+
+.case {
+  position: relative;
+  width: var(--case-size);
+  height: var(--case-size);
+  border: 2px solid rgba(65, 43, 25, 0.7);
+  background: linear-gradient(180deg, var(--couleur-case) 0%, #e5c45d 100%);
+  color: var(--couleur-texte-fonce);
+  border-radius: 4px;
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.12), 0 3px 0 rgba(0, 0, 0, 0.18);
+  display: grid;
+  place-items: center;
+  font-family: var(--police-titre);
+  font-size: 0.55rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: transform 0.2s ease, filter 0.2s ease, box-shadow 0.2s ease;
+  user-select: none;
+  padding: 0;
+  image-rendering: pixelated;
+}
+
+.case:hover,
+.case:focus-visible {
+  transform: translateY(-2px);
+  filter: brightness(1.03);
+}
+
+.case:active {
+  transform: translateY(0);
+}
+
+.case.is-locked {
+  background: linear-gradient(180deg, var(--couleur-case-verrouillee) 0%, #695a68 100%);
+  color: rgba(255, 255, 255, 0.8);
+  cursor: not-allowed;
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.08);
+}
+
+.case.is-opened {
+  background: linear-gradient(180deg, var(--couleur-case-ouverte) 0%, #d18d17 100%);
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.12), 0 0 0 3px rgba(255, 219, 112, 0.25);
+}
+
+.case.is-opening {
+  animation: popOpen 0.4s ease forwards;
+}
+
+.case .case-inner {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+}
+
+.case .case-number {
+  font-size: 0.52rem;
+  pointer-events: none;
+}
+
+.case .case-lock {
+  font-size: 0.48rem;
+  opacity: 0.8;
+}
+
+@keyframes popOpen {
+  0% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+  30% {
+    transform: scale(1.15) rotate(-1deg);
+    filter: brightness(1.15);
+  }
+  100% {
+    transform: scale(1.02);
+    filter: brightness(1);
+  }
+}
+
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.modal.is-open {
+  display: flex;
+}
+
+.modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 8, 21, 0.7);
+}
+
+.modal-card {
+  position: relative;
+  width: min(90vw, 440px);
+  max-height: min(80vh, 680px);
+  overflow: auto;
+  background: linear-gradient(180deg, rgba(58, 40, 59, 0.96), rgba(27, 16, 31, 0.96));
+  border: 4px solid var(--couleur-bordure);
+  border-radius: 12px;
+  box-shadow: 0 24px 44px rgba(0, 0, 0, 0.35);
+  padding: 1.2rem 1rem 1rem;
+  color: var(--couleur-texte);
+}
+
+.modal-close {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  width: 2rem;
+  height: 2rem;
+  border: 2px solid var(--couleur-bordure);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--couleur-texte);
+  cursor: pointer;
+  font-size: 1.1rem;
+}
+
+.modal-content {
+  display: grid;
+  gap: 0.9rem;
+  padding-top: 0.6rem;
+}
+
+.modal-kicker {
+  margin: 0;
+  color: #ffd66d;
+  font-size: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.modal-title {
+  margin: 0;
+  font-family: var(--police-titre);
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: var(--couleur-texte);
+}
+
+.modal-body {
+  margin: 0;
+  font-size: 0.54rem;
+  line-height: 1.7;
+  color: #f5ead8;
+  white-space: pre-wrap;
+}
+
+.modal-image {
+  width: 100%;
+  border-radius: 8px;
+  border: 3px solid rgba(255, 221, 122, 0.5);
+  background: rgba(255, 255, 255, 0.04);
+  image-rendering: pixelated;
+}
+
+.modal-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  padding: 0.8rem 1rem;
+  border-radius: 8px;
+  font-family: var(--police-titre);
+  font-size: 0.52rem;
+  color: var(--couleur-texte-fonce);
+  background: linear-gradient(180deg, #ffd56f 0%, #e6b53a 100%);
+  border: 2px solid rgba(92, 62, 10, 0.55);
+}
+
+.modal-fallback {
+  min-height: 130px;
+  display: grid;
+  place-items: center;
+  border: 3px dashed rgba(255, 213, 110, 0.55);
+  background: rgba(255, 255, 255, 0.03);
+  color: #ffd78d;
+  font-size: 0.48rem;
+  text-align: center;
+  border-radius: 8px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@media (max-width: 430px) {
+  .page-shell {
+    padding-left: 0.25rem;
+    padding-right: 0.25rem;
+  }
+
+  .eyebrow {
+    font-size: 0.48rem;
+  }
+
+  h1 {
+    font-size: 0.82rem;
+  }
+
+  .lock-message {
+    font-size: 0.42rem;
+  }
+}
+
+@media (max-height: 700px) {
+  .page-shell {
+    padding-bottom: 0.25rem;
+  }
+
+  .calendar-scene {
+    height: min(calc(var(--scene-height) * var(--pixel-scale)), calc(100vh - 150px));
+  }
+}
