@@ -38,11 +38,16 @@ body {
   min-height: 100vh;
   padding: clamp(10px, 2vw, 20px);
   display: grid;
-  place-items: center;
+  place-items: start center;
   overflow-x: hidden;
-  background:
-    radial-gradient(circle at top, rgba(255, 230, 150, 0.18), transparent 35%),
-    linear-gradient(180deg, #120b17 0%, var(--couleur-fond) 100%);
+  background-color: var(--couleur-fond);
+  background-image:
+    linear-gradient(180deg, rgba(18, 11, 23, 0.2), rgba(30, 18, 37, 0.32)),
+    url("images/fond/fond-noel.png");
+  background-position: center, calc(50% - 20px) center;
+  background-size: cover, min(110%, 94vh) auto;
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
   color: var(--couleur-texte);
   font-family: var(--police-base);
   text-transform: none;
@@ -85,7 +90,7 @@ h1 {
   color: var(--couleur-texte);
   text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.3);
 }
-
+vh
 .lock-message {
   min-height: 1.2rem;
   margin: 0 auto 0.75rem;
@@ -105,7 +110,8 @@ h1 {
 
 .calendar-scene {
   width: min(100%, 560px);
-  margin: clamp(1.5rem, 5vh, 3rem) auto 0;
+  margin: 0 auto;
+  transform: translateY(60vh);
   display: grid;
   grid-template-columns: 48px minmax(0, 1fr) 48px;
   gap: clamp(4px, 2vw, 14px);
@@ -120,7 +126,7 @@ h1 {
 
 .calendar-display {
   width: 100%;
-  min-height: clamp(210px, 42vh, 340px);
+  min-height: clamp(145px, 26vh, 220px);
   display: grid;
   place-items: center;
 }
@@ -160,7 +166,7 @@ h1 {
 .case {
   position: relative;
   width: min(100%, clamp(176px, 58vw, 240px));
-  height: clamp(190px, 34vh, 270px);
+  height: clamp(125px, 22vh, 190px);
   border: 0;
   background: transparent;
   color: var(--couleur-texte-fonce);
