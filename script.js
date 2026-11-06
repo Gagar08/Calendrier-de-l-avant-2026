@@ -31,6 +31,8 @@ let contenuParJour = [];
 let openDays = getStoredOpenDays();
 let currentIndex = 0;
 let isOpeningCase = false;
+let swipeStart = null;
+let suppressCaseClickUntil = 0;
 
 // --- Helpers ---------------------------------------------------------------
 
@@ -236,6 +238,10 @@ function openModalForDay(dayNumber) {
 }
 
 function handleCaseClick(dayNumber, button) {
+  if (Date.now() < suppressCaseClickUntil) {
+    return;
+  }
+
   if (isDayOpen(dayNumber)) {
     openModalForDay(dayNumber);
     return;
@@ -264,6 +270,33 @@ function handleCaseClick(dayNumber, button) {
     openModalForDay(dayNumber);
   }, GIFT_ANIMATION_DURATION);
 }
+
+calendarEl.addEventListener("pointerdown", (event) => {
+  if (event.pointerType === "touch") {
+    swipeStart = { x: event.clientX, y: event.clientY };
+  }
+});
+
+calendarEl.addEventListener("pointerup", (event) => {
+  if (!swipeStart) {
+    return;
+  }
+
+  const deltaX = event.clientX - swipeStart.x;
+  const deltaY = event.clientY - swipeStart.y;
+  swipeStart = null;
+
+  if (Math.abs(deltaX) < 45 || Math.abs(deltaX) < Math.abs(deltaY)) {
+    return;
+  }
+
+  suppressCaseClickUntil = Date.now() + 250;
+  navigateToCase(currentIndex + (deltaX < 0 ? 1 : -1));
+});
+
+calendarEl.addEventListener("pointercancel", () => {
+  swipeStart = null;
+});
 
 async function loadContent() {
   try {
