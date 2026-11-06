@@ -17,6 +17,7 @@ const ASSET_CONFIG = {
 const STORAGE_KEY = "calendrier-avent-ouvert-2026";
 const CONTENT_PATH = "contenu.json";
 const GIFT_ANIMATION_DURATION = 300;
+const SLIDE_ANIMATION_DURATION = 220;
 const DAYS = Array.from({ length: 24 }, (_, index) => index + 1);
 
 const calendarEl = document.getElementById("calendar");
@@ -31,6 +32,7 @@ let contenuParJour = [];
 let openDays = getStoredOpenDays();
 let currentIndex = 0;
 let isOpeningCase = false;
+let isNavigating = false;
 let swipeStart = null;
 let suppressCaseClickUntil = 0;
 
@@ -151,21 +153,68 @@ function createCase(dayNumber) {
   return button;
 }
 
-function renderCalendar() {
+function updateCarouselControls() {
+  previousCaseEl.disabled = currentIndex === 0 || isOpeningCase || isNavigating;
+  nextCaseEl.disabled = currentIndex === DAYS.length - 1 || isOpeningCase || isNavigating;
+}
+
+function renderCalendar(entryDirection = 0) {
   const day = DAYS[currentIndex];
-  calendarEl.replaceChildren(createCase(day));
-  previousCaseEl.disabled = currentIndex === 0 || isOpeningCase;
-  nextCaseEl.disabled = currentIndex === DAYS.length - 1 || isOpeningCase;
+  const caseButton = createCase(day);
+  const enteringClass = entryDirection > 0
+    ? "is-entering-from-right"
+    : entryDirection < 0
+      ? "is-entering-from-left"
+      : null;
+
+  if (enteringClass) {
+    caseButton.classList.add(enteringClass);
+  }
+
+  calendarEl.replaceChildren(caseButton);
+  updateCarouselControls();
   casePositionEl.textContent = `${currentIndex + 1} / ${DAYS.length}`;
+
+  if (enteringClass) {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        if (!caseButton.isConnected) {
+          return;
+        }
+
+        caseButton.classList.add("is-entering");
+        caseButton.classList.remove(enteringClass);
+
+        setTimeout(() => {
+          caseButton.classList.remove("is-entering");
+          isNavigating = false;
+          updateCarouselControls();
+        }, SLIDE_ANIMATION_DURATION);
+      });
+    });
+  }
 }
 
 function navigateToCase(index) {
-  if (index < 0 || index >= DAYS.length || isOpeningCase) {
+  if (index < 0 || index >= DAYS.length || index === currentIndex || isOpeningCase || isNavigating) {
     return;
   }
 
-  currentIndex = index;
-  renderCalendar();
+  const direction = index > currentIndex ? 1 : -1;
+  const currentCase = calendarEl.querySelector(".case");
+  isNavigating = true;
+  updateCarouselControls();
+
+  if (currentCase) {
+    currentCase.classList.remove("is-dragging");
+    currentCase.style.removeProperty("--swipe-offset");
+    currentCase.classList.add(direction > 0 ? "is-swiping-out-left" : "is-swiping-out-right");
+  }
+
+  setTimeout(() => {
+    currentIndex = index;
+    renderCalendar(direction);
+  }, SLIDE_ANIMATION_DURATION);
 }
 
 function findContentByDay(dayNumber) {
@@ -238,6 +287,10 @@ function openModalForDay(dayNumber) {
 }
 
 function handleCaseClick(dayNumber, button) {
+  if (isNavigating) {
+    return;
+  }
+
   if (Date.now() < suppressCaseClickUntil) {
     return;
   }
@@ -272,9 +325,38 @@ function handleCaseClick(dayNumber, button) {
 }
 
 calendarEl.addEventListener("pointerdown", (event) => {
-  if (event.pointerType === "touch") {
-    swipeStart = { x: event.clientX, y: event.clientY };
+  if (event.pointerType === "touch" && !isNavigating && !isOpeningCase) {
+    const target = event.target instanceof Element ? event.target.closest(".case") : null;
+    if (target) {
+      swipeStart = { x: event.clientX, y: event.clientY, button: target };
+    }
   }
+});
+
+calendarEl.addEventListener("pointermove", (event) => {
+  if (!swipeStart?.button || isNavigating || isOpeningCase) {
+    return;
+  }
+
+  const deltaX = event.clientX - swipeStart.x;
+  const deltaY = event.clientY - swipeStart.y;
+
+  if (Math.abs(deltaY) > 12 && Math.abs(deltaY) > Math.abs(deltaX)) {
+    swipeStart.button.classList.remove("is-dragging");
+    swipeStart.button.style.removeProperty("--swipe-offset");
+    swipeStart = null;
+    return;
+  }
+
+  if (Math.abs(deltaX) < 4) {
+    return;
+  }
+
+  event.preventDefault();
+  const maxOffset = Math.min(140, window.innerWidth * 0.45);
+  const swipeOffset = Math.max(-maxOffset, Math.min(maxOffset, deltaX));
+  swipeStart.button.classList.add("is-dragging");
+  swipeStart.button.style.setProperty("--swipe-offset", `${swipeOffset}px`);
 });
 
 calendarEl.addEventListener("pointerup", (event) => {
@@ -282,19 +364,37 @@ calendarEl.addEventListener("pointerup", (event) => {
     return;
   }
 
-  const deltaX = event.clientX - swipeStart.x;
-  const deltaY = event.clientY - swipeStart.y;
+  const gesture = swipeStart;
+  const deltaX = event.clientX - gesture.x;
+  const deltaY = event.clientY - gesture.y;
   swipeStart = null;
 
+  if (!gesture.button) {
+    return;
+  }
+
   if (Math.abs(deltaX) < 45 || Math.abs(deltaX) < Math.abs(deltaY)) {
+    gesture.button.classList.remove("is-dragging");
+    gesture.button.style.removeProperty("--swipe-offset");
     return;
   }
 
   suppressCaseClickUntil = Date.now() + 250;
-  navigateToCase(currentIndex + (deltaX < 0 ? 1 : -1));
+  const nextIndex = currentIndex + (deltaX < 0 ? 1 : -1);
+  if (nextIndex < 0 || nextIndex >= DAYS.length) {
+    gesture.button.classList.remove("is-dragging");
+    gesture.button.style.removeProperty("--swipe-offset");
+    return;
+  }
+
+  navigateToCase(nextIndex);
 });
 
 calendarEl.addEventListener("pointercancel", () => {
+  if (swipeStart?.button) {
+    swipeStart.button.classList.remove("is-dragging");
+    swipeStart.button.style.removeProperty("--swipe-offset");
+  }
   swipeStart = null;
 });
 

@@ -9,20 +9,8 @@
   --couleur-surface: rgba(34, 18, 38, 0.88);
   --couleur-bordure: #f6e4a6;
   --couleur-shadow: rgba(0, 0, 0, 0.28);
-  --police-base: "Press Start 2P", "Silkscreen", "Courier New", monospace;
-  --police-titre: "Press Start 2P", "Silkscreen", "Courier New", monospace;
-}
-
-@font-face {
-  font-family: "Press Start 2P";
-  src: local("Press Start 2P"), local("PressStart2P-Regular"), url("fonts/PressStart2P-Regular.ttf") format("truetype");
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Silkscreen";
-  src: local("Silkscreen"), url("fonts/Silkscreen-Regular.ttf") format("truetype");
-  font-display: swap;
+  --police-base: "Silkscreen", monospace;
+  --police-titre: "Press Start 2P", "Silkscreen", monospace;
 }
 
 * {
@@ -194,6 +182,45 @@ vh
 
 .case:active {
   transform: translateY(0);
+}
+
+.case.is-dragging {
+  transition: none;
+  transform: translateX(var(--swipe-offset, 0px));
+}
+
+.case.is-swiping-out-left,
+.case.is-swiping-out-right {
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 220ms ease, opacity 220ms ease;
+}
+
+.case.is-swiping-out-left {
+  transform: translateX(-125%);
+}
+
+.case.is-swiping-out-right {
+  transform: translateX(125%);
+}
+
+.case.is-entering-from-left,
+.case.is-entering-from-right {
+  opacity: 0;
+}
+
+.case.is-entering-from-left {
+  transform: translateX(-45%);
+}
+
+.case.is-entering-from-right {
+  transform: translateX(45%);
+}
+
+.case.is-entering {
+  opacity: 1;
+  transform: translateX(0);
+  transition: transform 220ms ease, opacity 220ms ease;
 }
 
 .case.is-locked {
