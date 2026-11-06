@@ -9,23 +9,28 @@ const ASSET_CONFIG = {
   frame: "images/decor/cadre.png",
   lockedIcon: "images/decor/icone-verrouille.png",
   openedIcon: "images/decor/icone-ouverte.png",
+  giftClosed: "images/gift/gift-close.png",
+  giftAnimation: "images/gift/gift-animation.gif",
+  giftOpen: "images/gift/gift-open.png",
 };
 
 const STORAGE_KEY = "calendrier-avent-ouvert-2026";
 const CONTENT_PATH = "contenu.json";
-
-const SHUFFLED_DAYS = [
-  12, 3, 19, 8, 23, 1, 16, 6, 21, 9, 14, 4, 18, 11, 24,
-  5, 13, 2, 20, 7, 15, 10, 22, 17,
-];
+const GIFT_ANIMATION_DURATION = 300;
+const DAYS = Array.from({ length: 24 }, (_, index) => index + 1);
 
 const calendarEl = document.getElementById("calendar");
+const previousCaseEl = document.getElementById("previous-case");
+const nextCaseEl = document.getElementById("next-case");
+const casePositionEl = document.getElementById("case-position");
 const modalEl = document.getElementById("modal");
 const modalContentEl = document.getElementById("modal-content");
 const lockMessageEl = document.getElementById("lock-message");
 
 let contenuParJour = [];
 let openDays = getStoredOpenDays();
+let currentIndex = 0;
+let isOpeningCase = false;
 
 // --- Helpers ---------------------------------------------------------------
 
@@ -94,26 +99,11 @@ function setLockMessage(text) {
   }, 1800);
 }
 
-function updatePixelScale() {
-  const viewportWidth = window.innerWidth;
-  const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
-  const scaleFromWidth = Math.floor(viewportWidth / 180);
-  const scaleFromHeight = Math.floor((viewportHeight - 170) / 320);
-  const scale = Math.min(4, Math.max(2, Math.min(scaleFromWidth, scaleFromHeight)));
-  document.documentElement.style.setProperty("--pixel-scale", String(scale));
-}
-
-async function assetExists(url) {
-  try {
-    const response = await fetch(url, { method: "HEAD" });
-    return response.ok;
-  } catch (error) {
-    return false;
+function setCaseGift(button, image) {
+  const gift = button.querySelector(".case-gift");
+  if (gift) {
+    gift.src = image;
   }
-}
-
-function resolveCaseVisual(dayNumber) {
-  return `images/cases/${String(dayNumber).padStart(2, "0")}.webp`;
 }
 
 function createCase(dayNumber) {
@@ -136,50 +126,44 @@ function createCase(dayNumber) {
   const inner = document.createElement("span");
   inner.className = "case-inner";
 
-  if (isOpen) {
-    inner.innerHTML = `<span class="case-number">${dayNumber}</span>`;
-  } else if (unlocked) {
-    const preview = document.createElement("span");
-    preview.className = "case-number";
-    preview.textContent = dayNumber;
-    inner.appendChild(preview);
+  const gift = document.createElement("img");
+  gift.className = "case-gift";
+  gift.alt = "";
+  inner.appendChild(gift);
+
+  const number = document.createElement("span");
+  number.className = "case-number";
+  number.textContent = dayNumber;
+  inner.appendChild(number);
+
+  if (!isOpen && unlocked) {
     button.setAttribute("title", `Ouvrir le ${getLetterDate(dayNumber)}`);
-  } else {
-    const lock = document.createElement("span");
-    lock.className = "case-lock";
-    lock.textContent = "🔒";
-    inner.appendChild(lock);
+  } else if (!isOpen) {
     button.setAttribute("title", `Ouvert à partir du ${getLetterDate(dayNumber)}`);
   }
 
-  const visual = resolveCaseVisual(dayNumber);
-  assetExists(visual).then((exists) => {
-    if (exists) {
-      button.style.backgroundImage = `url('${visual}')`;
-      button.style.backgroundSize = "cover";
-      button.style.backgroundPosition = "center";
-      button.style.backgroundRepeat = "no-repeat";
-    } else {
-      button.style.backgroundImage = "linear-gradient(180deg, #f5d76c 0%, #e7b33d 100%)";
-      button.style.backgroundSize = "cover";
-      button.style.backgroundPosition = "center";
-      button.style.backgroundRepeat = "no-repeat";
-    }
-  });
-
   button.appendChild(inner);
+  setCaseGift(button, isOpen ? ASSET_CONFIG.giftOpen : ASSET_CONFIG.giftClosed);
 
   button.addEventListener("click", () => handleCaseClick(dayNumber, button));
   return button;
 }
 
 function renderCalendar() {
-  calendarEl.innerHTML = "";
+  const day = DAYS[currentIndex];
+  calendarEl.replaceChildren(createCase(day));
+  previousCaseEl.disabled = currentIndex === 0 || isOpeningCase;
+  nextCaseEl.disabled = currentIndex === DAYS.length - 1 || isOpeningCase;
+  casePositionEl.textContent = `${currentIndex + 1} / ${DAYS.length}`;
+}
 
-  SHUFFLED_DAYS.forEach((day) => {
-    const caseButton = createCase(day);
-    calendarEl.appendChild(caseButton);
-  });
+function navigateToCase(index) {
+  if (index < 0 || index >= DAYS.length || isOpeningCase) {
+    return;
+  }
+
+  currentIndex = index;
+  renderCalendar();
 }
 
 function findContentByDay(dayNumber) {
@@ -263,16 +247,22 @@ function handleCaseClick(dayNumber, button) {
   }
 
   button.classList.add("is-opening");
+  button.disabled = true;
+  isOpeningCase = true;
+  previousCaseEl.disabled = true;
+  nextCaseEl.disabled = true;
+  setCaseGift(button, ASSET_CONFIG.giftAnimation);
 
   setTimeout(() => {
     if (!isDayOpen(dayNumber)) {
       openDays = normalizeOpenDays([...openDays, dayNumber]);
       saveOpenDays(openDays);
-      renderCalendar();
     }
 
+    isOpeningCase = false;
+    renderCalendar();
     openModalForDay(dayNumber);
-  }, 250);
+  }, GIFT_ANIMATION_DURATION);
 }
 
 async function loadContent() {
@@ -294,7 +284,8 @@ async function loadContent() {
   }
 }
 
-window.addEventListener("resize", updatePixelScale);
+previousCaseEl.addEventListener("click", () => navigateToCase(currentIndex - 1));
+nextCaseEl.addEventListener("click", () => navigateToCase(currentIndex + 1));
 
 window.addEventListener("click", (event) => {
   if (event.target instanceof HTMLElement && event.target.dataset.close === "true") {
@@ -306,8 +297,11 @@ document.querySelector(".modal-close")?.addEventListener("click", closeModal);
 document.addEventListener("keydown", (event) => {
   if (event.key === "Escape") {
     closeModal();
+  } else if (!modalEl.classList.contains("is-open") && event.key === "ArrowLeft") {
+    navigateToCase(currentIndex - 1);
+  } else if (!modalEl.classList.contains("is-open") && event.key === "ArrowRight") {
+    navigateToCase(currentIndex + 1);
   }
 });
 
-updatePixelScale();
 loadContent();

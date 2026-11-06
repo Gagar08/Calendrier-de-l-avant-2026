@@ -20,7 +20,12 @@
       <div id="lock-message" class="lock-message" aria-live="polite"></div>
 
       <main class="calendar-scene" aria-label="Calendrier de l'avent">
-        <div id="calendar" class="calendar-grid" aria-live="polite"></div>
+        <button id="previous-case" class="carousel-nav" type="button" aria-label="Case précédente" title="Case précédente">‹</button>
+        <div class="calendar-slide">
+          <div id="calendar" class="calendar-display" aria-live="polite"></div>
+          <p id="case-position" class="case-position" aria-live="polite"></p>
+        </div>
+        <button id="next-case" class="carousel-nav" type="button" aria-label="Case suivante" title="Case suivante">›</button>
       </main>
     </div>
 
@@ -28,7 +33,7 @@
       <div class="modal-backdrop" data-close="true"></div>
       <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modal-title">
         <button type="button" class="modal-close" aria-label="Fermer la fenêtre">
-          ×
+          
         </button>
         <div id="modal-content" class="modal-content"></div>
       </div>

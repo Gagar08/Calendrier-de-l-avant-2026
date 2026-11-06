@@ -11,12 +11,6 @@
   --couleur-shadow: rgba(0, 0, 0, 0.28);
   --police-base: "Press Start 2P", "Silkscreen", "Courier New", monospace;
   --police-titre: "Press Start 2P", "Silkscreen", "Courier New", monospace;
-  --pixel-scale: 2;
-  --case-size: 32px;
-  --grid-gap: 8px;
-  --grid-padding: 14px;
-  --scene-width: 180px;
-  --scene-height: 320px;
 }
 
 @font-face {
@@ -110,51 +104,73 @@ h1 {
 }
 
 .calendar-scene {
-  width: min(calc(var(--scene-width) * var(--pixel-scale)), calc(100vw - 24px));
-  height: min(calc(var(--scene-height) * var(--pixel-scale)), calc(100vh - 210px));
-  margin: 0 auto;
-  padding: 0;
-  background: rgba(255, 255, 255, 0.03);
-  box-shadow: 0 0 0 4px rgba(255, 240, 180, 0.15), 0 16px 32px rgba(0, 0, 0, 0.18);
-  border-radius: 14px;
-  display: flex;
+  width: min(100%, 520px);
+  margin: clamp(1.5rem, 5vh, 3rem) auto 0;
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr) 38px;
+  gap: clamp(6px, 2vw, 16px);
   align-items: center;
-  justify-content: center;
-  overflow: hidden;
 }
 
-.calendar-grid {
-  width: var(--scene-width);
-  height: var(--scene-height);
+.calendar-slide {
+  min-width: 0;
   display: grid;
-  grid-template-columns: repeat(4, var(--case-size));
-  grid-template-rows: repeat(6, var(--case-size));
-  gap: var(--grid-gap);
-  padding: var(--grid-padding);
-  padding-top: calc(var(--grid-padding) + 4px);
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(0, 0, 0, 0.04));
-  image-rendering: pixelated;
-  -ms-interpolation-mode: nearest-neighbor;
-  transform: scale(var(--pixel-scale));
-  transform-origin: center center;
+  justify-items: center;
+}
+
+.calendar-display {
+  width: 100%;
+  min-height: 220px;
+  display: grid;
+  place-items: center;
+}
+
+.carousel-nav {
+  width: 38px;
+  height: 56px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--couleur-texte);
+  font-size: 2.4rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: transform 0.18s ease, opacity 0.18s ease;
+}
+
+.carousel-nav:hover:not(:disabled),
+.carousel-nav:focus-visible {
+  transform: scale(1.15);
+}
+
+.carousel-nav:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.case-position {
+  margin: 0.6rem 0 0;
+  color: var(--couleur-texte);
+  font-size: 0.5rem;
+  text-align: center;
 }
 
 .case {
   position: relative;
-  width: var(--case-size);
-  height: var(--case-size);
-  border: 2px solid rgba(65, 43, 25, 0.7);
-  background: linear-gradient(180deg, var(--couleur-case) 0%, #e5c45d 100%);
+  width: min(100%, 176px);
+  height: 190px;
+  border: 0;
+  background: transparent;
   color: var(--couleur-texte-fonce);
-  border-radius: 4px;
-  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.12), 0 3px 0 rgba(0, 0, 0, 0.18);
+  border-radius: 0;
+  box-shadow: none;
   display: grid;
   place-items: center;
   font-family: var(--police-titre);
   font-size: 0.55rem;
   line-height: 1;
   cursor: pointer;
-  transition: transform 0.2s ease, filter 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.2s ease, filter 0.2s ease;
   user-select: none;
   padding: 0;
   image-rendering: pixelated;
@@ -171,15 +187,14 @@ h1 {
 }
 
 .case.is-locked {
-  background: linear-gradient(180deg, var(--couleur-case-verrouillee) 0%, #695a68 100%);
+  background: transparent;
   color: rgba(255, 255, 255, 0.8);
   cursor: not-allowed;
-  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.08);
 }
 
 .case.is-opened {
-  background: linear-gradient(180deg, var(--couleur-case-ouverte) 0%, #d18d17 100%);
-  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.12), 0 0 0 3px rgba(255, 219, 112, 0.25);
+  background: transparent;
+  box-shadow: none;
 }
 
 .case.is-opening {
@@ -188,19 +203,24 @@ h1 {
 
 .case .case-inner {
   position: absolute;
-  inset: 0;
+  inset: 8px;
   display: grid;
+  grid-template-rows: minmax(0, 1fr) 24px;
   place-items: center;
 }
 
-.case .case-number {
-  font-size: 0.52rem;
+.case .case-gift {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
   pointer-events: none;
 }
 
-.case .case-lock {
-  font-size: 0.48rem;
-  opacity: 0.8;
+.case .case-number {
+  color: #fff;
+  font-size: 0.8rem;
+  line-height: 1;
+  pointer-events: none;
 }
 
 @keyframes popOpen {
@@ -362,9 +382,5 @@ h1 {
 @media (max-height: 700px) {
   .page-shell {
     padding-bottom: 0.25rem;
-  }
-
-  .calendar-scene {
-    height: min(calc(var(--scene-height) * var(--pixel-scale)), calc(100vh - 150px));
   }
 }
