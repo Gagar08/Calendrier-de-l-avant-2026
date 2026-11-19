@@ -18,6 +18,11 @@ const STORAGE_KEY = "calendrier-avent-ouvert-2026";
 const CONTENT_PATH = "contenu.json";
 const GIFT_ANIMATION_DURATION = 300;
 const SLIDE_ANIMATION_DURATION = 220;
+const MUSIC_TRACKS = [
+  "sons/Last Christmas (8-Bit Version).mp3",
+  "sons/Let It Snow, Let It Snow, Let It Snow (8-Bit Version).mp3",
+  "sons/The Christmas Song (Chestnuts Roasting on an Open Fire) (8-Bit Version).mp3",
+];
 const DAYS = Array.from({ length: 24 }, (_, index) => index + 1);
 
 const calendarEl = document.getElementById("calendar");
@@ -27,6 +32,9 @@ const casePositionEl = document.getElementById("case-position");
 const modalEl = document.getElementById("modal");
 const modalContentEl = document.getElementById("modal-content");
 const lockMessageEl = document.getElementById("lock-message");
+const musicToggleEl = document.getElementById("music-toggle");
+const musicEl = new Audio();
+let currentTrackIndex = 0;
 
 let contenuParJour = [];
 let openDays = getStoredOpenDays();
@@ -83,6 +91,53 @@ function getStoredOpenDays() {
 function saveOpenDays(days) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(days));
 }
+
+function updateMusicToggle() {
+  const isPlaying = !musicEl.paused;
+  const label = isPlaying ? "Mettre la musique en pause" : "Reprendre la musique";
+  musicToggleEl.textContent = isPlaying ? "Ⅱ" : "♫";
+  musicToggleEl.setAttribute("aria-label", label);
+  musicToggleEl.setAttribute("title", label);
+  musicToggleEl.setAttribute("aria-pressed", String(isPlaying));
+}
+
+function playMusic() {
+  musicEl.play().then(updateMusicToggle).catch(updateMusicToggle);
+}
+
+function playNextTrack() {
+  currentTrackIndex = (currentTrackIndex + 1) % MUSIC_TRACKS.length;
+  musicEl.src = MUSIC_TRACKS[currentTrackIndex];
+  playMusic();
+}
+
+musicEl.addEventListener("ended", playNextTrack);
+musicEl.addEventListener("play", updateMusicToggle);
+musicEl.addEventListener("pause", updateMusicToggle);
+musicEl.src = MUSIC_TRACKS[currentTrackIndex];
+
+function startMusicAfterInteraction(event) {
+  if (event.target === musicToggleEl) {
+    return;
+  }
+
+  document.removeEventListener("pointerdown", startMusicAfterInteraction);
+  document.removeEventListener("keydown", startMusicAfterInteraction);
+  playMusic();
+}
+
+document.addEventListener("pointerdown", startMusicAfterInteraction);
+document.addEventListener("keydown", startMusicAfterInteraction);
+musicToggleEl.addEventListener("click", () => {
+  if (musicEl.paused) {
+    document.removeEventListener("pointerdown", startMusicAfterInteraction);
+    document.removeEventListener("keydown", startMusicAfterInteraction);
+    playMusic();
+  } else {
+    musicEl.pause();
+  }
+});
+playMusic();
 
 function normalizeOpenDays(days) {
   return Array.from(new Set(days.map(Number).filter((value) => value >= 1 && value <= 24)));
