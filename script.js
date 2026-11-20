@@ -16,7 +16,7 @@ const ASSET_CONFIG = {
 
 const STORAGE_KEY = "calendrier-avent-ouvert-2026";
 const CONTENT_PATH = "contenu.json";
-const GIFT_ANIMATION_DURATION = 300;
+const GIFT_ANIMATION_DURATION = 750;
 const SLIDE_ANIMATION_DURATION = 220;
 const MUSIC_TRACKS = [
   "sons/Last Christmas (8-Bit Version).mp3",
@@ -38,7 +38,7 @@ let currentTrackIndex = 0;
 
 let contenuParJour = [];
 let openDays = getStoredOpenDays();
-let currentIndex = 0;
+let currentIndex = getInitialCaseIndex();
 let isOpeningCase = false;
 let isNavigating = false;
 let swipeStart = null;
@@ -62,6 +62,11 @@ function getDateOverride() {
 
 function getCurrentLocalDate() {
   return getDateOverride() || new Date();
+}
+
+function getInitialCaseIndex() {
+  const currentDay = getCurrentLocalDate().getDate();
+  return Math.min(Math.max(currentDay, 1), DAYS.length) - 1;
 }
 
 function getLetterDate(dayNumber) {
@@ -95,7 +100,7 @@ function saveOpenDays(days) {
 function updateMusicToggle() {
   const isPlaying = !musicEl.paused;
   const label = isPlaying ? "Mettre la musique en pause" : "Reprendre la musique";
-  musicToggleEl.textContent = isPlaying ? "Ⅱ" : "♫";
+  musicToggleEl.classList.toggle("is-playing", isPlaying);
   musicToggleEl.setAttribute("aria-label", label);
   musicToggleEl.setAttribute("title", label);
   musicToggleEl.setAttribute("aria-pressed", String(isPlaying));
@@ -481,7 +486,14 @@ window.addEventListener("click", (event) => {
   }
 });
 
-document.querySelector(".modal-close")?.addEventListener("click", closeModal);
+document.querySelector(".modal-close")?.addEventListener("click", (event) => {
+  const button = event.currentTarget;
+  button.classList.add("is-pressed");
+  setTimeout(() => {
+    button.classList.remove("is-pressed");
+    closeModal();
+  }, 160);
+});
 document.addEventListener("keydown", (event) => {
   if (event.key === "Escape") {
     closeModal();
