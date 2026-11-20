@@ -8,9 +8,9 @@
   {
     "jour": 2,
     "type": "lien",
-    "titre": "Une recette simple",
-    "texte": "Un petit goût de Noël à préparer ensemble : chocolat chaud, épices et douceur.",
-    "lien": "https://example.com/recette"
+    "titre": "Memory de Noël",
+    "texte": "Retrouve les huit paires de symboles de Noël !",
+    "lien": "jeux.html?jour=2"
   },
   {
     "jour": 3,
@@ -34,9 +34,9 @@
   {
     "jour": 6,
     "type": "lien",
-    "titre": "Musique douce",
-    "texte": "Une playlist légère pour une soirée cocooning.",
-    "lien": "https://example.com/playlist"
+    "titre": "Défi des réflexes",
+    "texte": "Attrape autant de cadeaux que possible avant la fin du temps !",
+    "lien": "jeux.html?jour=6"
   },
   {
     "jour": 7,
@@ -60,9 +60,9 @@
   {
     "jour": 10,
     "type": "lien",
-    "titre": "Vidéo sympa",
-    "texte": "Un petit moment de rire pour faire passer la journée.",
-    "lien": "https://example.com/video"
+    "titre": "Quiz de Noël",
+    "texte": "Teste tes connaissances avec cinq questions de Noël.",
+    "lien": "jeux.html?jour=10"
   },
   {
     "jour": 11,
@@ -86,9 +86,9 @@
   {
     "jour": 14,
     "type": "lien",
-    "titre": "Une idée de sortie",
-    "texte": "Un petit plan simple pour changer d'air : promenade, marché de Noël ou café chaleureux.",
-    "lien": "https://example.com/plan"
+    "titre": "La suite lumineuse",
+    "texte": "Observe les lumières et répète leur séquence sans te tromper !",
+    "lien": "jeux.html?jour=14"
   },
   {
     "jour": 15,
@@ -112,9 +112,9 @@
   {
     "jour": 18,
     "type": "lien",
-    "titre": "Une petite recette",
-    "texte": "Un goûter facile à partager : biscuits maison ou mélange de douceurs.",
-    "lien": "https://example.com/gouter"
+    "titre": "Le tri des cadeaux",
+    "texte": "Attrape uniquement les cadeaux rouges avant la fin du temps.",
+    "lien": "jeux.html?jour=18"
   },
   {
     "jour": 19,
@@ -138,9 +138,9 @@
   {
     "jour": 22,
     "type": "lien",
-    "titre": "Cadeau surprise",
-    "texte": "Un petit lien d'orientation à remplacer par un vrai cadeau ou une référence utile.",
-    "lien": "https://example.com/cadeau"
+    "titre": "Le mot mystère",
+    "texte": "Remets les lettres dans l’ordre pour trouver les mots de Noël.",
+    "lien": "jeux.html?jour=22"
   },
   {
     "jour": 23,

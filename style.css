@@ -64,12 +64,12 @@ a {
 .page-header {
   position: absolute;
   top: 3%;
-  left: 7%;
-  width: 86%;
+  left: 4%;
+  width: 92%;
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 1.5cqw;
+  gap: 1cqw;
   margin: 0;
 }
 
@@ -114,8 +114,9 @@ a {
 h1 {
   margin: 0;
   font-family: var(--police-titre);
-  font-size: 4cqw;
+  font-size: 3cqw;
   line-height: 1.5;
+  white-space: nowrap;
   color: var(--couleur-texte);
   text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.3);
 }
@@ -138,6 +139,30 @@ h1 {
 .lock-message.is-visible {
   opacity: 1;
   transform: translateY(0);
+}
+
+.dev-reset {
+  position: absolute;
+  z-index: 2;
+  left: 50%;
+  bottom: 1.5%;
+  transform: translateX(-50%);
+  padding: 1cqw 1.5cqw;
+  border: 1px solid var(--couleur-bordure);
+  background: var(--couleur-surface);
+  color: var(--couleur-texte);
+  font-size: 2cqw;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.dev-reset[hidden] {
+  display: none;
+}
+
+.dev-reset:focus-visible {
+  outline: 2px solid var(--couleur-case);
+  outline-offset: 2px;
 }
 
 .calendar-scene {

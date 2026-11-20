@@ -16,13 +16,23 @@ const ASSET_CONFIG = {
 
 const STORAGE_KEY = "calendrier-avent-ouvert-2026";
 const CONTENT_PATH = "contenu.json";
-const GIFT_ANIMATION_DURATION = 500;
+const GIFT_ANIMATION_DURATION = 1450;
 const SLIDE_ANIMATION_DURATION = 220;
 const MUSIC_TRACKS = [
   "sons/music/Last Christmas (8-Bit Version).mp3",
   "sons/music/Let It Snow, Let It Snow, Let It Snow (8-Bit Version).mp3",
   "sons/music/The Christmas Song (Chestnuts Roasting on an Open Fire) (8-Bit Version).mp3",
 ];
+function shuffleTrackIndices() {
+  const indices = MUSIC_TRACKS.map((_, index) => index);
+  for (let index = indices.length - 1; index > 0; index -= 1) {
+    const randomIndex = Math.floor(Math.random() * (index + 1));
+    [indices[index], indices[randomIndex]] = [indices[randomIndex], indices[index]];
+  }
+  return indices;
+}
+
+let upcomingTrackIndices = shuffleTrackIndices();
 const FOLEY_SOUNDS = {
   slide: new Audio("sons/foley/whoosh.mp3"),
   openGift: new Audio("sons/foley/open_gift.mp3"),
@@ -37,8 +47,10 @@ const modalEl = document.getElementById("modal");
 const modalContentEl = document.getElementById("modal-content");
 const lockMessageEl = document.getElementById("lock-message");
 const musicToggleEl = document.getElementById("music-toggle");
+const devResetEl = document.getElementById("dev-reset");
+const isLocalDevelopment = ["localhost", "127.0.0.1", "[::1]"].includes(window.location.hostname);
 const musicEl = new Audio();
-let currentTrackIndex = 0;
+let currentTrackIndex = upcomingTrackIndices.pop();
 
 let contenuParJour = [];
 let openDays = getStoredOpenDays();
@@ -103,7 +115,7 @@ function saveOpenDays(days) {
 
 function updateMusicToggle() {
   const isPlaying = !musicEl.paused;
-  const label = isPlaying ? "Mettre la musique en pause" : "Reprendre la musique";
+  const label = isPlaying ? "Mettre la musique en pause" : "Lancer ou reprendre la musique";
   musicToggleEl.classList.toggle("is-playing", isPlaying);
   musicToggleEl.setAttribute("aria-label", label);
   musicToggleEl.setAttribute("title", label);
@@ -115,7 +127,17 @@ function playMusic() {
 }
 
 function playNextTrack() {
-  currentTrackIndex = (currentTrackIndex + 1) % MUSIC_TRACKS.length;
+  if (upcomingTrackIndices.length === 0) {
+    upcomingTrackIndices = shuffleTrackIndices();
+    const lastIndex = upcomingTrackIndices.length - 1;
+    if (upcomingTrackIndices.length > 1 && upcomingTrackIndices[lastIndex] === currentTrackIndex) {
+      [upcomingTrackIndices[lastIndex], upcomingTrackIndices[lastIndex - 1]] = [
+        upcomingTrackIndices[lastIndex - 1],
+        upcomingTrackIndices[lastIndex],
+      ];
+    }
+  }
+  currentTrackIndex = upcomingTrackIndices.pop();
   musicEl.src = MUSIC_TRACKS[currentTrackIndex];
   playMusic();
 }
@@ -131,28 +153,13 @@ function playFoley(sound) {
   sound.play().catch(() => {});
 }
 
-function startMusicAfterInteraction(event) {
-  if (event.target === musicToggleEl) {
-    return;
-  }
-
-  document.removeEventListener("pointerdown", startMusicAfterInteraction);
-  document.removeEventListener("keydown", startMusicAfterInteraction);
-  playMusic();
-}
-
-document.addEventListener("pointerdown", startMusicAfterInteraction);
-document.addEventListener("keydown", startMusicAfterInteraction);
 musicToggleEl.addEventListener("click", () => {
   if (musicEl.paused) {
-    document.removeEventListener("pointerdown", startMusicAfterInteraction);
-    document.removeEventListener("keydown", startMusicAfterInteraction);
     playMusic();
   } else {
     musicEl.pause();
   }
 });
-playMusic();
 
 function normalizeOpenDays(days) {
   return Array.from(new Set(days.map(Number).filter((value) => value >= 1 && value <= 24)));
@@ -346,9 +353,11 @@ function openModalForDay(dayNumber) {
     const link = document.createElement("a");
     link.className = "modal-link";
     link.href = content.lien;
-    link.target = "_blank";
-    link.rel = "noreferrer noopener";
-    link.textContent = "Ouvrir le lien";
+    if (/^https?:\/\//i.test(content.lien)) {
+      link.target = "_blank";
+      link.rel = "noreferrer noopener";
+    }
+    link.textContent = content.type === "lien" ? "Jouer" : "Ouvrir le lien";
     contentNode.appendChild(link);
   }
 
@@ -515,5 +524,19 @@ document.addEventListener("keydown", (event) => {
     navigateToCase(currentIndex + 1);
   }
 });
+
+if (isLocalDevelopment) {
+  devResetEl.hidden = false;
+  devResetEl.addEventListener("click", () => {
+    if (!window.confirm("Réinitialiser les cadeaux ouverts sur ce navigateur ?")) {
+      return;
+    }
+
+    openDays = [];
+    localStorage.removeItem(STORAGE_KEY);
+    renderCalendar();
+    setLockMessage("Les cadeaux ont été réinitialisés.");
+  });
+}
 
 loadContent();

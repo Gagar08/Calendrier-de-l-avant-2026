@@ -9,6 +9,9 @@ index.html       Structure de la page et commandes
 style.css        Thème pixel art, mise en page et animations
 script.js        Navigation, dates, ouverture des cases, modale et musique
 contenu.json     Contenu des 24 jours
+jeux.html        Mini-jeux accessibles depuis les jours de type « lien »
+jeux.css         Styles de la page des jeux
+jeux.js          Logique du memory, du jeu de réflexes et du quiz
 images/fond/     Fond de page utilisé par le CSS
 images/gift/     Images des cadeaux fermé, animé et ouvert
 images/cadre/    Cadre de la fenêtre du cadeau
@@ -26,7 +29,7 @@ Les dossiers `images/cases/` et `images/decor/` ne sont pas nécessaires au fonc
 - Une case est déverrouillée à partir de son jour en décembre de l’année courante. Le paramètre `?date=AAAA-MM-JJ` permet de simuler une date, par exemple `?date=2026-12-07`.
 - Cliquer sur une case déverrouillée joue l’animation du cadeau, enregistre son ouverture dans le stockage local du navigateur, puis affiche son contenu.
 - Les ouvertures sont conservées dans `localStorage` sous la clé `calendrier-avent-ouvert-2026`. Elles sont propres au navigateur et à l’appareil utilisés.
-- La musique utilise les fichiers du dossier `sons/music/`. La lecture automatique peut être bloquée par le navigateur jusqu’à une interaction. Le bouton musical permet de lancer ou mettre en pause la lecture; les morceaux s’enchaînent. Les effets de `sons/foley/` accompagnent le changement de case et l’ouverture d’un cadeau.
+- La musique ne démarre qu’après un clic sur le bouton musical. Les fichiers de `sons/music/` passent dans un ordre aléatoire, sans répétition avant que tous les morceaux aient joué. Le bouton permet aussi de mettre la lecture en pause ou de la reprendre. Les effets de `sons/foley/` accompagnent le changement de case et l’ouverture d’un cadeau.
 - Échap ferme la fenêtre de contenu. Cliquer en dehors de celle-ci la ferme également.
 
 ## Personnaliser le contenu
@@ -46,9 +49,9 @@ Modifiez `contenu.json`, qui contient un tableau d’objets avec une entrée par
 ]
 ```
 
-`jour` doit être un nombre de 1 à 24. `titre`, `texte`, `image` et `lien` sont facultatifs. Le script affiche le titre, le texte, l’image et le lien fournis, quel que soit le champ `type` : celui-ci sert surtout à décrire le contenu dans les données. Les images doivent être accessibles par un chemin relatif au site; un visuel de remplacement s’affiche si une image ne peut pas être chargée. Les liens s’ouvrent dans un nouvel onglet.
+`jour` doit être un nombre de 1 à 24. `titre`, `texte`, `image` et `lien` sont facultatifs. Le script affiche le titre, le texte, l’image et le lien fournis, quel que soit le champ `type`. Chaque jour de type `lien` ouvre son propre jeu dans `jeux.html` : memory (jour 2), réflexes (jour 6), quiz (jour 10), suite lumineuse (jour 14), tri des cadeaux (jour 18) ou mot mystère (jour 22). Il n’y a pas de menu de sélection; le numéro du jour détermine le jeu affiché. Les liens internes s’ouvrent dans l’onglet actuel et les URL externes dans un nouvel onglet. Les images doivent être accessibles par un chemin relatif au site; un visuel de remplacement s’affiche si une image ne peut pas être chargée.
 
-Remplacez les URL `example.com` et les textes de démonstration avant publication si vous souhaitez des contenus personnels.
+Les textes d’exemple peuvent être remplacés avant publication par des contenus personnels.
 
 ## Personnaliser les visuels et les couleurs
 
@@ -74,7 +77,7 @@ python -m http.server 8000
 
 Puis ouvrez <http://localhost:8000/>. Pour tester une date, utilisez par exemple <http://localhost:8000/?date=2026-12-07>.
 
-Pour recommencer le test d’ouverture, effacez la clé `calendrier-avent-ouvert-2026` dans le stockage local du navigateur.
+Sur `localhost`, le bouton **Réinitialiser les cadeaux** apparaît en bas de la scène. Il efface les ouvertures mémorisées sur ce navigateur après confirmation. Il n’est pas affiché sur le site publié. Pour recommencer le test d’ouverture manuellement, effacez la clé `calendrier-avent-ouvert-2026` dans le stockage local du navigateur.
 
 ## Déployer
 
