@@ -13,7 +13,8 @@ images/fond/     Fond de page utilisé par le CSS
 images/gift/     Images des cadeaux fermé, animé et ouvert
 images/cadre/    Cadre de la fenêtre du cadeau
 images/buttons/  Boutons graphiques, dont celui pour fermer la fenêtre
-sons/            Morceaux audio utilisés par le lecteur
+sons/music/      Morceaux audio utilisés par le lecteur
+sons/foley/      Effets sonores de navigation et d’ouverture des cadeaux
 ```
 
 Les dossiers `images/cases/` et `images/decor/` ne sont pas nécessaires au fonctionnement actuel. Le contenu peut toutefois référencer des images, par exemple `images/cases/04.webp`.
@@ -21,10 +22,11 @@ Les dossiers `images/cases/` et `images/decor/` ne sont pas nécessaires au fonc
 ## Fonctionnement
 
 - Le calendrier présente **une case à la fois** et s’ouvre sur le numéro correspondant au jour du mois (limité aux cases 1 à 24). Les flèches, les touches ← et →, ou un balayage horizontal sur écran tactile permettent de changer de case.
+- Le titre, le bouton musical et la case sont placés en proportion du fond : ils gardent la même position par rapport au décor quand l’image se redimensionne selon l’écran.
 - Une case est déverrouillée à partir de son jour en décembre de l’année courante. Le paramètre `?date=AAAA-MM-JJ` permet de simuler une date, par exemple `?date=2026-12-07`.
 - Cliquer sur une case déverrouillée joue l’animation du cadeau, enregistre son ouverture dans le stockage local du navigateur, puis affiche son contenu.
 - Les ouvertures sont conservées dans `localStorage` sous la clé `calendrier-avent-ouvert-2026`. Elles sont propres au navigateur et à l’appareil utilisés.
-- La musique utilise les fichiers du dossier `sons/`. La lecture automatique peut être bloquée par le navigateur jusqu’à une interaction. Le bouton ♫ permet de lancer ou mettre en pause la lecture; les morceaux s’enchaînent.
+- La musique utilise les fichiers du dossier `sons/music/`. La lecture automatique peut être bloquée par le navigateur jusqu’à une interaction. Le bouton musical permet de lancer ou mettre en pause la lecture; les morceaux s’enchaînent. Les effets de `sons/foley/` accompagnent le changement de case et l’ouverture d’un cadeau.
 - Échap ferme la fenêtre de contenu. Cliquer en dehors de celle-ci la ferme également.
 
 ## Personnaliser le contenu
@@ -58,7 +60,7 @@ Les images des cadeaux sont configurées au début de `script.js` :
 
 Le fond de page est défini dans `style.css` sous `images/fond/fond-noel.png`. Le cadre `images/cadre/cadre1.png` sert de fond à la fenêtre contenant le cadeau du jour; son image est étirée pour s’adapter au contenu. Remplacez les fichiers en conservant ces chemins, ou modifiez les chemins dans les fichiers concernés. Les couleurs et polices du thème sont réglées par les variables CSS au début de `style.css`. Les polices de titre et de texte sont chargées depuis Google Fonts; une police monospace de remplacement est prévue.
 
-Les pistes musicales sont listées dans `MUSIC_TRACKS` au début de `script.js`. Remplacez les chemins pour utiliser d’autres fichiers audio.
+Les pistes musicales et effets sonores sont listés au début de `script.js`. Remplacez leurs chemins pour utiliser d’autres fichiers audio.
 
 ## Lancer en local
 

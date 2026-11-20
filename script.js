@@ -16,13 +16,17 @@ const ASSET_CONFIG = {
 
 const STORAGE_KEY = "calendrier-avent-ouvert-2026";
 const CONTENT_PATH = "contenu.json";
-const GIFT_ANIMATION_DURATION = 750;
+const GIFT_ANIMATION_DURATION = 500;
 const SLIDE_ANIMATION_DURATION = 220;
 const MUSIC_TRACKS = [
-  "sons/Last Christmas (8-Bit Version).mp3",
-  "sons/Let It Snow, Let It Snow, Let It Snow (8-Bit Version).mp3",
-  "sons/The Christmas Song (Chestnuts Roasting on an Open Fire) (8-Bit Version).mp3",
+  "sons/music/Last Christmas (8-Bit Version).mp3",
+  "sons/music/Let It Snow, Let It Snow, Let It Snow (8-Bit Version).mp3",
+  "sons/music/The Christmas Song (Chestnuts Roasting on an Open Fire) (8-Bit Version).mp3",
 ];
+const FOLEY_SOUNDS = {
+  slide: new Audio("sons/foley/whoosh.mp3"),
+  openGift: new Audio("sons/foley/open_gift.mp3"),
+};
 const DAYS = Array.from({ length: 24 }, (_, index) => index + 1);
 
 const calendarEl = document.getElementById("calendar");
@@ -120,6 +124,12 @@ musicEl.addEventListener("ended", playNextTrack);
 musicEl.addEventListener("play", updateMusicToggle);
 musicEl.addEventListener("pause", updateMusicToggle);
 musicEl.src = MUSIC_TRACKS[currentTrackIndex];
+
+function playFoley(sound) {
+  sound.pause();
+  sound.currentTime = 0;
+  sound.play().catch(() => {});
+}
 
 function startMusicAfterInteraction(event) {
   if (event.target === musicToggleEl) {
@@ -261,6 +271,7 @@ function navigateToCase(index) {
   }
 
   const direction = index > currentIndex ? 1 : -1;
+  playFoley(FOLEY_SOUNDS.slide);
   const currentCase = calendarEl.querySelector(".case");
   isNavigating = true;
   updateCarouselControls();
@@ -368,6 +379,7 @@ function handleCaseClick(dayNumber, button) {
   button.classList.add("is-opening");
   button.disabled = true;
   isOpeningCase = true;
+  playFoley(FOLEY_SOUNDS.openGift);
   previousCaseEl.disabled = true;
   nextCaseEl.disabled = true;
   setCaseGift(button, ASSET_CONFIG.giftAnimation);
