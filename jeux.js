@@ -12,18 +12,25 @@ const gameByDay = {
 };
 const selectedGame = gameByDay[requestedDay];
 
-dayLabel.textContent = selectedGame ? `Jeu du jour ${requestedDay}` : "";
+dayLabel.textContent = selectedGame ? `Épreuve du jour ${requestedDay}` : "";
 gamePanels.forEach((panel) => {
   panel.hidden = panel.id !== `game-${selectedGame || "unavailable"}`;
 });
 
-// Memory : retrouve les huit paires.
+// Memory : retrouve les cinq paires illustrées.
 const memoryBoard = document.getElementById("memory-board");
 const memoryStatus = document.getElementById("memory-status");
-const memorySymbols = ["🎁", "❄️", "🎄", "⭐", "🍪", "🧦", "🔔", "🦌"];
+const memorySymbols = [
+  { name: "Bonhomme de neige", src: "images/mini-jeux/bonhome.png" },
+  { name: "Cadeau", src: "images/mini-jeux/cadeau.png" },
+  { name: "Cloche", src: "images/mini-jeux/cloche.png" },
+  { name: "Père Noël", src: "images/mini-jeux/pere_noel.png" },
+  { name: "Renne", src: "images/mini-jeux/rene.png" },
+];
 let memoryCards = [];
 let revealedCards = [];
 let matchedPairs = 0;
+let memoryMoves = 0;
 let memoryLocked = false;
 
 function shuffle(items) {
@@ -36,21 +43,26 @@ function shuffle(items) {
 }
 
 function startMemory() {
-  memoryCards = shuffle(memorySymbols.flatMap((symbol, pair) => [
-    { symbol, pair },
-    { symbol, pair },
+  memoryCards = shuffle(memorySymbols.flatMap((item, pair) => [
+    { ...item, pair },
+    { ...item, pair },
   ]));
   revealedCards = [];
   matchedPairs = 0;
+  memoryMoves = 0;
   memoryLocked = false;
-  memoryStatus.textContent = "À toi de jouer !";
+  memoryStatus.textContent = "Objectif : terminer en moins de 12 coups.";
   memoryBoard.replaceChildren();
 
   memoryCards.forEach((card, index) => {
     const button = document.createElement("button");
     button.className = "memory-card";
     button.type = "button";
-    button.textContent = "❄️";
+    const image = document.createElement("img");
+    image.className = "memory-card-image";
+    image.src = "images/mini-jeux/cadeau.png";
+    image.alt = "";
+    button.appendChild(image);
     button.setAttribute("aria-label", `Carte ${index + 1}, cachée`);
     button.addEventListener("click", () => revealMemoryCard(index, button));
     memoryBoard.appendChild(button);
@@ -60,41 +72,47 @@ function startMemory() {
 function revealMemoryCard(index, button) {
   if (memoryLocked || button.classList.contains("is-revealed") || button.classList.contains("is-matched")) return;
   button.classList.add("is-revealed");
-  button.textContent = memoryCards[index].symbol;
-  button.setAttribute("aria-label", `Carte ${index + 1} : ${memoryCards[index].symbol}`);
+  const card = memoryCards[index];
+  const image = button.querySelector("img");
+  image.src = card.src;
+  image.alt = card.name;
+  button.setAttribute("aria-label", `Carte ${index + 1} : ${card.name}`);
   revealedCards.push({ index, button });
   if (revealedCards.length < 2) return;
 
   const [first, second] = revealedCards;
+  memoryMoves += 1;
   if (memoryCards[first.index].pair === memoryCards[second.index].pair) {
     first.button.classList.add("is-matched");
     second.button.classList.add("is-matched");
     revealedCards = [];
     matchedPairs += 1;
     memoryStatus.textContent = matchedPairs === memorySymbols.length
-      ? "Bravo, toutes les paires sont trouvées ! 🎉"
-      : `${matchedPairs} paire${matchedPairs > 1 ? "s" : ""} trouvée${matchedPairs > 1 ? "s" : ""} !`;
+      ? `Terminé en ${memoryMoves} coups.`
+      : `Paires : ${matchedPairs}/${memorySymbols.length} · Coups : ${memoryMoves}`;
     return;
   }
 
   memoryLocked = true;
-  memoryStatus.textContent = "Pas la même paire, réessaie !";
+  memoryStatus.textContent = "Paire incorrecte.";
   window.setTimeout(() => {
     revealedCards.forEach(({ index: hiddenIndex, button: hiddenButton }) => {
       hiddenButton.classList.remove("is-revealed");
-      hiddenButton.textContent = "❄️";
+      const image = hiddenButton.querySelector("img");
+      image.src = "images/mini-jeux/cadeau.png";
+      image.alt = "";
       hiddenButton.setAttribute("aria-label", `Carte ${hiddenIndex + 1}, cachée`);
     });
     revealedCards = [];
     memoryLocked = false;
-    memoryStatus.textContent = "À toi de jouer !";
+    memoryStatus.textContent = `Paires : ${matchedPairs}/${memorySymbols.length} · Coups : ${memoryMoves}`;
   }, 850);
 }
 
 document.getElementById("memory-reset").addEventListener("click", startMemory);
 startMemory();
 
-// Réflexes : attrape autant de cadeaux que possible en 15 secondes.
+// Réflexes : touche la cible aussi souvent que possible en 15 secondes.
 const reactionArea = document.getElementById("reaction-area");
 const reactionTarget = document.getElementById("reaction-target");
 const reactionHint = reactionArea.querySelector(".reaction-hint");
@@ -119,7 +137,7 @@ reactionStart.addEventListener("click", () => {
   reactionScore.textContent = "Score : 0";
   reactionTime.textContent = "Temps : 15 s";
   reactionStart.disabled = true;
-  reactionStart.textContent = "À toi !";
+  reactionStart.textContent = "Partie en cours…";
   reactionTarget.hidden = false;
   reactionHint.hidden = true;
   moveReactionTarget();
@@ -132,8 +150,8 @@ reactionStart.addEventListener("click", () => {
       reactionTarget.hidden = true;
       reactionHint.hidden = false;
       reactionStart.disabled = false;
-      reactionStart.textContent = "Rejouer";
-      reactionScore.textContent = `Terminé ! Score : ${reactionPoints}`;
+      reactionStart.textContent = "Nouvelle tentative";
+      reactionScore.textContent = `Manche terminée · Score : ${reactionPoints}`;
     }
   }, 1000);
 });
@@ -145,13 +163,13 @@ reactionTarget.addEventListener("click", () => {
   moveReactionTarget();
 });
 
-// Quiz de cinq questions.
+// Quiz de logique et de déduction.
 const quizQuestions = [
-  { question: "Quelle couleur associe-t-on souvent au costume du Père Noël ?", answers: ["Violet", "Rouge", "Turquoise"], correct: 1 },
-  { question: "Quel animal tire traditionnellement le traîneau du Père Noël ?", answers: ["Un pingouin", "Un renne", "Un ours"], correct: 1 },
-  { question: "Sous quoi trouve-t-on les cadeaux ?", answers: ["Le canapé", "La cheminée", "Le sapin"], correct: 2 },
-  { question: "Quel biscuit laisse-t-on parfois au Père Noël ?", answers: ["Une frite", "Un cookie", "Une olive"], correct: 1 },
-  { question: "Que fait-on avec une boule de neige ?", answers: ["On la lance", "On la plante", "On la boit"], correct: 0 },
+  { question: "Une bouteille et son bouchon coûtent 1,10 €. La bouteille coûte 1 € de plus que le bouchon. Combien coûte le bouchon ?", answers: ["5 centimes", "10 centimes", "15 centimes"], correct: 0 },
+  { question: "Un train électrique roule vers le nord. Le vent souffle vers le sud. Où part sa fumée ?", answers: ["Vers le nord", "Vers le sud", "Il n’y a pas de fumée"], correct: 2 },
+  { question: "Quelle valeur complète la suite : 2, 6, 12, 20, 30, … ?", answers: ["40", "42", "44"], correct: 1 },
+  { question: "Cinq machines fabriquent cinq pièces en cinq minutes. Combien de temps mettent cent machines à fabriquer cent pièces ?", answers: ["5 minutes", "20 minutes", "100 minutes"], correct: 0 },
+  { question: "Deux pères et deux fils s’assoient à table. Quel est le plus petit nombre de personnes possible ?", answers: ["3", "4", "5"], correct: 0 },
 ];
 let quizIndex = 0;
 let quizPoints = 0;
@@ -174,7 +192,7 @@ function renderQuizQuestion() {
   const item = quizQuestions[quizIndex];
   quizProgress.textContent = `Question ${quizIndex + 1} / ${quizQuestions.length}`;
   quizQuestion.textContent = item.question;
-  quizStatus.textContent = "Choisis une réponse.";
+  quizStatus.textContent = "Sélectionnez une réponse.";
   quizAnswers.replaceChildren();
   item.answers.forEach((answer, answerIndex) => {
     const button = document.createElement("button");
@@ -195,11 +213,11 @@ function answerQuiz(selectedButton, answerIndex) {
   if (answerIndex === correctIndex) {
     quizPoints += 1;
     selectedButton.classList.add("is-correct");
-    quizStatus.textContent = "Bonne réponse ! 🎄";
+    quizStatus.textContent = "Réponse exacte.";
   } else {
     selectedButton.classList.add("is-wrong");
     answerButtons[correctIndex].classList.add("is-correct");
-    quizStatus.textContent = "Pas tout à fait !";
+    quizStatus.textContent = "Réponse incorrecte.";
   }
 
   window.setTimeout(() => {
@@ -210,11 +228,11 @@ function answerQuiz(selectedButton, answerIndex) {
       return;
     }
     quizProgress.textContent = "Quiz terminé";
-    quizQuestion.textContent = `Tu as obtenu ${quizPoints} / ${quizQuestions.length} bonnes réponses !`;
+    quizQuestion.textContent = `Score final : ${quizPoints} / ${quizQuestions.length}`;
     quizAnswers.replaceChildren();
     quizStatus.textContent = quizPoints === quizQuestions.length
-      ? "Champion·ne de Noël ! ✨"
-      : "Bien joué, tu peux retenter ta chance.";
+      ? "Sans faute. Excellente déduction."
+      : "Relance une partie pour améliorer ton score.";
     quizRestart.hidden = false;
   }, 850);
 }
@@ -235,7 +253,7 @@ function playSequence() {
   sequencePlaying = true;
   sequenceStart.disabled = true;
   sequenceButtons.forEach((button) => { button.disabled = true; });
-  sequenceStatus.textContent = `Regarde bien — manche ${sequenceRound} sur 5.`;
+  sequenceStatus.textContent = `Mémorisation : ${sequenceRound}/8.`;
   sequence.forEach((colorIndex, index) => {
     window.setTimeout(() => {
       const button = sequenceButtons[colorIndex];
@@ -248,7 +266,7 @@ function playSequence() {
     sequenceStart.disabled = false;
     sequenceStep = 0;
     sequenceButtons.forEach((button) => { button.disabled = false; });
-    sequenceStatus.textContent = "À toi ! Répète la séquence.";
+    sequenceStatus.textContent = "À vous de reproduire la séquence.";
   }, 650 * sequence.length + 350);
 }
 
@@ -267,15 +285,15 @@ sequenceButtons.forEach((button) => button.addEventListener("click", () => {
   button.classList.add("is-lit");
   window.setTimeout(() => button.classList.remove("is-lit"), 180);
   if (pressedColor !== sequence[sequenceStep]) {
-    sequenceStatus.textContent = "Oups, ce n’était pas la bonne lumière. Recommence !";
+    sequenceStatus.textContent = "Erreur de séquence. Lancez une nouvelle partie pour réessayer.";
     sequenceRound = 0;
     sequenceButtons.forEach((item) => { item.disabled = true; });
     return;
   }
   sequenceStep += 1;
   if (sequenceStep < sequence.length) return;
-  if (sequenceRound === 5) {
-    sequenceStatus.textContent = "Bravo, tu as retenu toute la séquence ! ✨";
+  if (sequenceRound === 8) {
+    sequenceStatus.textContent = "Séquence complète : 8 manches réussies.";
     sequenceRound = 0;
     sequenceButtons.forEach((item) => { item.disabled = true; });
     return;
@@ -286,15 +304,24 @@ sequenceButtons.forEach((button) => button.addEventListener("click", () => {
 }));
 sequenceStart.addEventListener("click", startSequence);
 
-// Tri des cadeaux : sélectionne seulement les cadeaux rouges.
+// Tri rapide : trouve cinq cadeaux parmi vingt sprites.
 const sortingBoard = document.getElementById("sorting-board");
 const sortingStatus = document.getElementById("sorting-status");
 const sortingTime = document.getElementById("sorting-time");
 const sortingStart = document.getElementById("sorting-start");
+const giftSprite = { name: "Cadeau", src: "images/mini-jeux/cadeau.png", isGift: true };
+const sortingCharacters = [
+  { name: "Bonhomme de neige", src: "images/mini-jeux/bonhome.png" },
+  { name: "Cloche", src: "images/mini-jeux/cloche.png" },
+  { name: "Père Noël", src: "images/mini-jeux/pere_noel.png" },
+  { name: "Renne", src: "images/mini-jeux/rene.png" },
+];
 const sortingGifts = [
-  ["🎁", true], ["🎄", false], ["🧧", true], ["🔔", false],
-  ["🎁", false], ["🧦", true], ["🎀", false], ["🧧", true],
-  ["⭐", false], ["🎁", true], ["🍬", false], ["🧦", true],
+  ...Array.from({ length: 5 }, () => ({ ...giftSprite })),
+  ...sortingCharacters.flatMap((character, index) => Array.from(
+    { length: index === sortingCharacters.length - 1 ? 3 : 4 },
+    () => ({ ...character, isGift: false }),
+  )),
 ];
 let sortingTimer = null;
 let sortingSeconds = 20;
@@ -307,28 +334,34 @@ function startSorting() {
   sortingFound = 0;
   sortingActive = true;
   sortingTime.textContent = "Temps : 20 s";
-  sortingStatus.textContent = "Trouve les cadeaux rouges !";
+  sortingStatus.textContent = "Sélectionne les cinq cadeaux. Chaque erreur retire 3 secondes.";
   sortingStart.disabled = true;
   sortingBoard.replaceChildren();
 
-  shuffle(sortingGifts).forEach(([symbol, isRed], index) => {
+  shuffle(sortingGifts).forEach((item, index) => {
     const button = document.createElement("button");
-    button.className = `sorting-gift${isRed ? " is-red" : ""}`;
+    button.className = `sorting-gift${item.isGift ? " is-gift" : ""}`;
     button.type = "button";
-    button.textContent = symbol;
-    button.style.setProperty("--gift-paper", isRed ? "#ad334b" : ["#286596", "#547d39", "#bc8b27"][index % 3]);
-    button.setAttribute("aria-label", `Cadeau ${index + 1}`);
+    const image = document.createElement("img");
+    image.src = item.src;
+    image.alt = "";
+    button.appendChild(image);
+    button.style.setProperty("--gift-paper", item.isGift ? "#ad334b" : ["#286596", "#547d39", "#bc8b27"][index % 3]);
+    button.setAttribute("aria-label", item.name);
     button.addEventListener("click", () => {
       if (!sortingActive || button.disabled) return;
       button.disabled = true;
-      if (isRed) {
+      if (item.isGift) {
         sortingFound += 1;
         button.classList.add("is-found");
-        sortingStatus.textContent = `Bien vu ! ${sortingFound} sur 6 cadeaux rouges.`;
-        if (sortingFound === 6) finishSorting(true);
+        sortingStatus.textContent = `Cadeaux trouvés : ${sortingFound}/5.`;
+        if (sortingFound === 5) finishSorting(true);
       } else {
         button.classList.add("is-missed");
-        sortingStatus.textContent = "Celui-là n’est pas rouge !";
+        sortingSeconds = Math.max(0, sortingSeconds - 3);
+        sortingTime.textContent = `Temps : ${sortingSeconds} s`;
+        sortingStatus.textContent = "Mauvaise sélection : -3 secondes.";
+        if (sortingSeconds === 0) finishSorting(false);
       }
     });
     sortingBoard.appendChild(button);
@@ -345,24 +378,26 @@ function finishSorting(allFound) {
   sortingActive = false;
   window.clearInterval(sortingTimer);
   sortingStart.disabled = false;
-  sortingStart.textContent = "Rejouer";
+  sortingStart.textContent = "Nouvelle tentative";
   sortingStatus.textContent = allFound
-    ? "Parfait, tous les cadeaux rouges sont triés ! 🎉"
-    : `Temps écoulé ! Tu en as trouvé ${sortingFound} sur 6.`;
+    ? "Objectif atteint : 5 cadeaux trouvés."
+    : `Temps écoulé : ${sortingFound}/5 cadeaux trouvés.`;
 }
 
 sortingStart.addEventListener("click", startSorting);
 
-// Mot mystère : déchiffre cinq mots de Noël.
+// Décryptage : déchiffre six mots à partir d'un indice.
 const mysteryWords = [
-  { word: "SAPIN", scrambled: "NIPAS" },
-  { word: "CADEAU", scrambled: "DEAUCA" },
-  { word: "ETOILE", scrambled: "LITEOE" },
-  { word: "RENNE", scrambled: "NENER" },
-  { word: "NEIGE", scrambled: "GNEIE" },
+  { word: "CANNELLE", scrambled: "NELLECNA", clue: "Épice chaude souvent utilisée dans les boissons d’hiver." },
+  { word: "EQUINOXE", scrambled: "XENIOQUE", clue: "Moment de l’année où le jour et la nuit ont presque la même durée." },
+  { word: "SOLSTICE", scrambled: "CTESLISO", clue: "Événement astronomique qui marque le jour le plus court de l’année." },
+  { word: "GIVRAGE", scrambled: "RAGEVIG", clue: "Formation de cristaux de glace sur une surface froide." },
+  { word: "MANTEAU", scrambled: "TAMENAU", clue: "Vêtement extérieur conçu pour protéger du froid." },
+  { word: "BOUGIE", scrambled: "GIBOUE", clue: "Source de lumière dont la mèche brûle dans de la cire." },
 ];
 const wordProgress = document.getElementById("word-progress");
 const scrambledWord = document.getElementById("scrambled-word");
+const wordClue = document.getElementById("word-clue");
 const wordForm = document.getElementById("word-form");
 const wordAnswer = document.getElementById("word-answer");
 const wordStatus = document.getElementById("word-status");
@@ -370,12 +405,13 @@ let wordIndex = 0;
 
 function showMysteryWord() {
   const item = mysteryWords[wordIndex];
-  wordProgress.textContent = `Mot ${wordIndex + 1} sur ${mysteryWords.length}`;
+  wordProgress.textContent = `Énigme ${wordIndex + 1} / ${mysteryWords.length}`;
   scrambledWord.textContent = item.scrambled.split("").join("  ");
+  wordClue.textContent = item.clue;
   wordAnswer.value = "";
   wordAnswer.disabled = false;
   wordForm.querySelector("button").disabled = false;
-  wordStatus.textContent = "À toi de trouver !";
+  wordStatus.textContent = "Saisissez votre réponse.";
   wordAnswer.focus();
 }
 
@@ -383,7 +419,7 @@ wordForm.addEventListener("submit", (event) => {
   event.preventDefault();
   const answer = wordAnswer.value.trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase();
   if (answer !== mysteryWords[wordIndex].word) {
-    wordStatus.textContent = "Pas encore, essaie une autre combinaison !";
+    wordStatus.textContent = "Réponse incorrecte. Réessayez.";
     wordAnswer.select();
     return;
   }
@@ -392,11 +428,11 @@ wordForm.addEventListener("submit", (event) => {
   wordForm.querySelector("button").disabled = true;
   if (wordIndex === mysteryWords.length - 1) {
     wordProgress.textContent = "Terminé !";
-    scrambledWord.textContent = "Tu as déchiffré tous les mots !";
-    wordStatus.textContent = "Bravo, maître·sse des mots de Noël ! ✨";
+    scrambledWord.textContent = "Les six mots sont déchiffrés.";
+    wordStatus.textContent = "Décryptage terminé : 6 mots résolus.";
     return;
   }
-  wordStatus.textContent = "Bien trouvé ! 🎄";
+  wordStatus.textContent = "Réponse exacte.";
   wordIndex += 1;
   window.setTimeout(showMysteryWord, 700);
 });

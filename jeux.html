@@ -3,8 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Quelques mini-jeux de Noël du calendrier de l’Avent." />
-    <title>Mini-jeux de Noël</title>
+    <meta name="description" content="Des épreuves de logique, mémoire et réflexes pour le calendrier de l’Avent." />
+    <title>Épreuves de décembre</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Silkscreen:wght@400;700&display=swap" rel="stylesheet" />
@@ -16,76 +16,79 @@
       <a class="back-link" href="index.html">← Retour au calendrier</a>
       <header class="games-header">
         <p class="eyebrow">Calendrier de l’Avent</p>
-        <h1>Mini-jeux de Noël</h1>
+        <h1>Épreuves de décembre</h1>
         <p id="day-label" class="day-label"></p>
       </header>
 
       <section class="game-panel" id="game-memory" aria-labelledby="memory-title">
-        <h2 id="memory-title">Memory des cadeaux</h2>
-        <p>Trouve les huit paires. Retourne deux cartes à la fois.</p>
+        <h2 id="memory-title">Memory de décembre</h2>
+        <p>Retrouvez cinq paires en utilisant le moins de coups possible.</p>
         <div id="memory-board" class="memory-board" aria-label="Plateau de memory"></div>
-        <p id="memory-status" class="game-status" aria-live="polite">À toi de jouer !</p>
-        <button id="memory-reset" class="action-button" type="button">Recommencer</button>
+        <p id="memory-status" class="game-status" aria-live="polite">Objectif : terminer en moins de 12 coups.</p>
+        <button id="memory-reset" class="action-button" type="button">Nouvelle partie</button>
       </section>
 
       <section class="game-panel" id="game-reaction" aria-labelledby="reaction-title" hidden>
-        <h2 id="reaction-title">Attrape les cadeaux</h2>
-        <p>Clique sur les cadeaux pendant 15 secondes. Combien peux-tu en attraper ?</p>
+        <h2 id="reaction-title">Test de réflexes</h2>
+        <p>15 secondes. Cliquez dès que la cible apparaît et visez le meilleur score.</p>
         <div id="reaction-area" class="reaction-area">
-          <button id="reaction-target" class="reaction-target" type="button" aria-label="Attraper le cadeau" hidden>🎁</button>
-          <span class="reaction-hint">Les cadeaux apparaîtront ici</span>
+          <button id="reaction-target" class="reaction-target" type="button" aria-label="Attraper le cadeau" hidden>
+            <img src="images/mini-jeux/cadeau.png" alt="" />
+          </button>
+          <span class="reaction-hint">La cible apparaîtra ici</span>
         </div>
         <div class="reaction-info">
           <p id="reaction-score" class="game-status" aria-live="polite">Score : 0</p>
           <p id="reaction-time" class="game-status" aria-live="polite">Temps : 15 s</p>
         </div>
-        <button id="reaction-start" class="action-button" type="button">Commencer</button>
+        <button id="reaction-start" class="action-button" type="button">Lancer la partie</button>
       </section>
 
       <section class="game-panel" id="game-quiz" aria-labelledby="quiz-title" hidden>
-        <h2 id="quiz-title">Quiz de Noël</h2>
+        <h2 id="quiz-title">Énigmes de logique</h2>
         <p id="quiz-progress" class="game-status" aria-live="polite"></p>
         <h3 id="quiz-question" class="quiz-question"></h3>
         <div id="quiz-answers" class="quiz-answers"></div>
-        <p id="quiz-status" class="game-status" aria-live="polite">Choisis une réponse.</p>
-        <button id="quiz-restart" class="action-button" type="button" hidden>Rejouer</button>
+        <p id="quiz-status" class="game-status" aria-live="polite">Sélectionnez une réponse.</p>
+        <button id="quiz-restart" class="action-button" type="button" hidden>Recommencer</button>
       </section>
 
       <section class="game-panel" id="game-sequence" aria-labelledby="sequence-title" hidden>
         <h2 id="sequence-title">La suite lumineuse</h2>
-        <p>Observe la séquence, puis répète-la dans le même ordre.</p>
-        <p id="sequence-status" class="game-status" aria-live="polite">Appuie sur commencer.</p>
+        <p>Mémorisez puis reproduisez une séquence qui s’allonge à chaque manche.</p>
+        <p id="sequence-status" class="game-status" aria-live="polite">Lancez la partie pour commencer.</p>
         <div class="sequence-board" aria-label="Boutons lumineux">
           <button class="sequence-button" type="button" data-color="0" aria-label="Lumière rouge">●</button>
           <button class="sequence-button" type="button" data-color="1" aria-label="Lumière verte">●</button>
           <button class="sequence-button" type="button" data-color="2" aria-label="Lumière bleue">●</button>
           <button class="sequence-button" type="button" data-color="3" aria-label="Lumière jaune">●</button>
         </div>
-        <button id="sequence-start" class="action-button" type="button">Commencer</button>
+        <button id="sequence-start" class="action-button" type="button">Lancer la partie</button>
       </section>
 
       <section class="game-panel" id="game-sort" aria-labelledby="sort-title" hidden>
         <h2 id="sort-title">Le tri des cadeaux</h2>
-        <p>Clique uniquement sur les cadeaux rouges avant la fin du temps !</p>
+        <p>Sélectionnez cinq cadeaux parmi vingt objets. Chaque erreur coûte trois secondes.</p>
         <div id="sorting-board" class="sorting-board" aria-label="Cadeaux à trier"></div>
         <div class="reaction-info">
-          <p id="sorting-status" class="game-status" aria-live="polite">Appuie sur commencer.</p>
+          <p id="sorting-status" class="game-status" aria-live="polite">Lancez la partie pour commencer.</p>
           <p id="sorting-time" class="game-status">Temps : 20 s</p>
         </div>
-        <button id="sorting-start" class="action-button" type="button">Commencer</button>
+        <button id="sorting-start" class="action-button" type="button">Lancer la partie</button>
       </section>
 
       <section class="game-panel" id="game-word" aria-labelledby="word-title" hidden>
-        <h2 id="word-title">Le mot mystère</h2>
-        <p>Remets les lettres dans l’ordre pour trouver le mot de Noël.</p>
+        <h2 id="word-title">Décryptage</h2>
+        <p>Déchiffrez six mots à partir de leurs lettres et de leurs indices.</p>
         <p id="word-progress" class="game-status" aria-live="polite"></p>
+        <p id="word-clue" class="word-clue"></p>
         <p id="scrambled-word" class="scrambled-word"></p>
         <form id="word-form" class="word-form">
-          <label class="visually-hidden" for="word-answer">Ta réponse</label>
+          <label class="visually-hidden" for="word-answer">Votre réponse</label>
           <input id="word-answer" type="text" autocomplete="off" required />
           <button class="action-button" type="submit">Valider</button>
         </form>
-        <p id="word-status" class="game-status" aria-live="polite">À toi de trouver !</p>
+        <p id="word-status" class="game-status" aria-live="polite">Saisissez votre réponse.</p>
       </section>
 
       <section class="game-panel" id="game-unavailable" hidden>

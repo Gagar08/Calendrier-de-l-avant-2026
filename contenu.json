@@ -8,8 +8,8 @@
   {
     "jour": 2,
     "type": "lien",
-    "titre": "Memory de Noël",
-    "texte": "Retrouve les huit paires de symboles de Noël !",
+    "titre": "Memory de décembre",
+    "texte": "Retrouvez cinq paires en utilisant le moins de coups possible.",
     "lien": "jeux.html?jour=2"
   },
   {
@@ -34,8 +34,8 @@
   {
     "jour": 6,
     "type": "lien",
-    "titre": "Défi des réflexes",
-    "texte": "Attrape autant de cadeaux que possible avant la fin du temps !",
+    "titre": "Test de réflexes",
+    "texte": "Quinze secondes pour viser le meilleur score.",
     "lien": "jeux.html?jour=6"
   },
   {
@@ -60,8 +60,8 @@
   {
     "jour": 10,
     "type": "lien",
-    "titre": "Quiz de Noël",
-    "texte": "Teste tes connaissances avec cinq questions de Noël.",
+    "titre": "Énigmes de logique",
+    "texte": "Cinq problèmes courts de logique et de déduction.",
     "lien": "jeux.html?jour=10"
   },
   {
@@ -87,7 +87,7 @@
     "jour": 14,
     "type": "lien",
     "titre": "La suite lumineuse",
-    "texte": "Observe les lumières et répète leur séquence sans te tromper !",
+    "texte": "Mémorisez puis reproduisez une séquence de huit manches.",
     "lien": "jeux.html?jour=14"
   },
   {
@@ -113,7 +113,7 @@
     "jour": 18,
     "type": "lien",
     "titre": "Le tri des cadeaux",
-    "texte": "Attrape uniquement les cadeaux rouges avant la fin du temps.",
+    "texte": "Sélectionnez cinq cadeaux parmi vingt objets. Chaque erreur coûte trois secondes.",
     "lien": "jeux.html?jour=18"
   },
   {
@@ -138,8 +138,8 @@
   {
     "jour": 22,
     "type": "lien",
-    "titre": "Le mot mystère",
-    "texte": "Remets les lettres dans l’ordre pour trouver les mots de Noël.",
+    "titre": "Décryptage",
+    "texte": "Résolvez six anagrammes à partir de leurs indices.",
     "lien": "jeux.html?jour=22"
   },
   {

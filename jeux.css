@@ -80,21 +80,29 @@ h1 { margin: 0.4rem 0; font-size: clamp(1rem, 4vw, 1.65rem); }
 
 .memory-board {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: clamp(0.35rem, 2vw, 0.7rem);
   width: min(100%, 440px);
   margin: 1.2rem auto;
 }
 
 .memory-card {
+  display: grid;
+  place-items: center;
   aspect-ratio: 1;
   border: 3px solid #a98b58;
   border-radius: 0;
   background: #514665;
   color: var(--cream);
-  font-size: clamp(1.35rem, 8vw, 2.8rem);
   cursor: pointer;
   box-shadow: 4px 4px 0 #0b0a12;
+  image-rendering: pixelated;
+}
+
+.memory-card-image {
+  width: min(68%, 56px);
+  height: min(68%, 56px);
+  object-fit: contain;
   image-rendering: pixelated;
 }
 
@@ -122,10 +130,10 @@ h1 { margin: 0.4rem 0; font-size: clamp(1rem, 4vw, 1.65rem); }
   padding: 0;
   border: 2px solid var(--gold);
   background: #38314b;
-  font-size: 2.5rem;
   cursor: pointer;
   box-shadow: 3px 3px 0 #0b0a12;
 }
+.reaction-target img { width: 36px; height: 36px; object-fit: contain; image-rendering: pixelated; }
 .reaction-target:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 #0b0a12; }
 .reaction-info { display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap; }
 
@@ -161,22 +169,24 @@ h1 { margin: 0.4rem 0; font-size: clamp(1rem, 4vw, 1.65rem); }
 
 .sorting-board {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 0.5rem;
   width: min(100%, 420px);
   margin: 1.2rem auto;
 }
 
 .sorting-gift {
+  display: grid;
+  place-items: center;
   aspect-ratio: 1;
   border: 3px solid #171524;
   border-radius: 0;
   background: var(--gift-paper);
-  font-size: clamp(1.3rem, 7vw, 2rem);
   cursor: pointer;
   box-shadow: 4px 4px 0 #0b0a12;
 }
 
+.sorting-gift img { width: min(72%, 60px); height: min(72%, 60px); object-fit: contain; image-rendering: pixelated; }
 .sorting-gift.is-found { outline: 3px solid var(--green); outline-offset: -6px; }
 .sorting-gift.is-missed { opacity: 0.45; }
 .sorting-gift:disabled { cursor: default; }
@@ -207,6 +217,13 @@ h1 { margin: 0.4rem 0; font-size: clamp(1rem, 4vw, 1.65rem); }
   letter-spacing: 0.12em;
 }
 
+.word-clue {
+  width: min(100%, 38rem);
+  margin: 0 auto;
+  color: var(--green);
+  font-size: 0.9rem;
+}
+
 .visually-hidden {
   position: absolute;
   width: 1px;
@@ -225,6 +242,7 @@ button:focus-visible, a:focus-visible { outline: 3px solid var(--green); outline
   body { padding: 0.75rem; }
   .game-panel { padding: 1rem 0.7rem; }
   .reaction-area { min-height: 210px; }
+  .sorting-board { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .action-button, .quiz-answer { padding: 0.55rem; font-size: 0.45rem; }
 }
 

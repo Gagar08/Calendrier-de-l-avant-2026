@@ -16,6 +16,7 @@ images/fond/     Fond de page utilisé par le CSS
 images/gift/     Images des cadeaux fermé, animé et ouvert
 images/cadre/    Cadre de la fenêtre du cadeau
 images/buttons/  Boutons graphiques, dont celui pour fermer la fenêtre
+images/mini-jeux/ Sprites pixel art utilisés par les mini-jeux
 sons/music/      Morceaux audio utilisés par le lecteur
 sons/foley/      Effets sonores de navigation et d’ouverture des cadeaux
 ```
