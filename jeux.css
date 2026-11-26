@@ -28,7 +28,10 @@ body {
   line-height: 1.7;
 }
 
-button, a { font: inherit; }
+button, a {
+  font: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
 
 .games-page {
   width: min(100%, 760px);

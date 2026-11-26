@@ -48,7 +48,10 @@ const modalContentEl = document.getElementById("modal-content");
 const lockMessageEl = document.getElementById("lock-message");
 const musicToggleEl = document.getElementById("music-toggle");
 const devResetEl = document.getElementById("dev-reset");
+const gameOverlayEl = document.getElementById("game-overlay");
+const gameFrameEl = document.getElementById("game-frame");
 const isLocalDevelopment = ["localhost", "127.0.0.1", "[::1]"].includes(window.location.hostname);
+const isDeveloperMode = isLocalDevelopment || new URLSearchParams(window.location.search).get("dev") === "1";
 const musicEl = new Audio();
 let currentTrackIndex = upcomingTrackIndices.pop();
 
@@ -95,6 +98,10 @@ function getDateAtUnlock(dayNumber, baseDate = new Date()) {
 }
 
 function isUnlocked(dayNumber, baseDate = new Date()) {
+  if (isDeveloperMode) {
+    return true;
+  }
+
   const currentYear = baseDate.getFullYear();
   const dateToUnlock = getDateAtUnlock(dayNumber, new Date(currentYear, 0, 1));
   return baseDate >= dateToUnlock && baseDate.getMonth() === 11;
@@ -159,6 +166,15 @@ musicToggleEl.addEventListener("click", () => {
   } else {
     musicEl.pause();
   }
+});
+musicToggleEl.addEventListener("pointerdown", () => {
+  musicToggleEl.classList.remove("is-pressing-play", "is-pressing-stop");
+  musicToggleEl.classList.add(musicEl.paused ? "is-pressing-play" : "is-pressing-stop");
+});
+["pointerup", "pointercancel", "pointerleave"].forEach((eventName) => {
+  musicToggleEl.addEventListener(eventName, () => {
+    musicToggleEl.classList.remove("is-pressing-play", "is-pressing-stop");
+  });
 });
 
 function normalizeOpenDays(days) {
@@ -305,6 +321,21 @@ function closeModal() {
   modalContentEl.innerHTML = "";
 }
 
+function openGame(url) {
+  gameFrameEl.hidden = false;
+  gameFrameEl.src = url;
+  gameOverlayEl.classList.add("is-open");
+  gameOverlayEl.setAttribute("aria-hidden", "false");
+  gameFrameEl.focus();
+}
+
+function closeGame() {
+  gameOverlayEl.classList.remove("is-open");
+  gameOverlayEl.setAttribute("aria-hidden", "true");
+  gameFrameEl.src = "about:blank";
+  gameFrameEl.hidden = true;
+}
+
 function openModalForDay(dayNumber) {
   const content = findContentByDay(dayNumber);
   if (!content) {
@@ -353,11 +384,27 @@ function openModalForDay(dayNumber) {
     const link = document.createElement("a");
     link.className = "modal-link";
     link.href = content.lien;
+    const targetUrl = new URL(content.lien, window.location.href);
+    const launchesGame = targetUrl.origin === window.location.origin && /(^|\/)jeux\.html$/.test(targetUrl.pathname);
+    if (launchesGame) {
+      link.classList.add("modal-link-game");
+      link.setAttribute("aria-label", "Lancer le jeu");
+    }
+    link.addEventListener("click", (event) => {
+      if (launchesGame) {
+        event.preventDefault();
+        link.classList.add("is-pressed");
+        setTimeout(() => {
+          link.classList.remove("is-pressed");
+          openGame(targetUrl.href);
+        }, 220);
+      }
+    });
     if (/^https?:\/\//i.test(content.lien)) {
       link.target = "_blank";
       link.rel = "noreferrer noopener";
     }
-    link.textContent = content.type === "lien" ? "Jouer" : "Ouvrir le lien";
+    link.textContent = launchesGame ? "Lancer le jeu" : content.type === "lien" ? "Jouer" : "Ouvrir le lien";
     contentNode.appendChild(link);
   }
 
@@ -513,11 +560,20 @@ document.querySelector(".modal-close")?.addEventListener("click", (event) => {
   setTimeout(() => {
     button.classList.remove("is-pressed");
     closeModal();
-  }, 160);
+  }, 220);
+});
+window.addEventListener("message", (event) => {
+  if (event.origin === window.location.origin && event.source === gameFrameEl.contentWindow && event.data?.type === "close-game") {
+    closeGame();
+  }
 });
 document.addEventListener("keydown", (event) => {
   if (event.key === "Escape") {
-    closeModal();
+    if (gameOverlayEl.classList.contains("is-open")) {
+      closeGame();
+    } else {
+      closeModal();
+    }
   } else if (!modalEl.classList.contains("is-open") && event.key === "ArrowLeft") {
     navigateToCase(currentIndex - 1);
   } else if (!modalEl.classList.contains("is-open") && event.key === "ArrowRight") {
@@ -525,7 +581,7 @@ document.addEventListener("keydown", (event) => {
   }
 });
 
-if (isLocalDevelopment) {
+if (isDeveloperMode) {
   devResetEl.hidden = false;
   devResetEl.addEventListener("click", () => {
     if (!window.confirm("Réinitialiser les cadeaux ouverts sur ce navigateur ?")) {

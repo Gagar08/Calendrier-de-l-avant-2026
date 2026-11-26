@@ -1,4 +1,16 @@
 const params = new URLSearchParams(window.location.search);
+document.querySelector(".back-link")?.addEventListener("click", (event) => {
+  if (window.parent !== window) {
+    event.preventDefault();
+    window.parent.postMessage({ type: "close-game" }, window.location.origin);
+  }
+});
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && window.parent !== window) {
+    window.parent.postMessage({ type: "close-game" }, window.location.origin);
+  }
+});
+
 const requestedDay = Number(params.get("jour"));
 const dayLabel = document.getElementById("day-label");
 const gamePanels = Array.from(document.querySelectorAll(".game-panel"));

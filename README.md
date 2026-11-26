@@ -7,7 +7,7 @@ Un calendrier de l’Avent statique, en français, destiné à être partagé av
 ```text
 index.html       Structure de la page et commandes
 style.css        Thème pixel art, mise en page et animations
-script.js        Navigation, dates, ouverture des cases, modale et musique
+script.js        Navigation, dates, ouverture des cases, modales et musique
 contenu.json     Contenu des 24 jours
 jeux.html        Mini-jeux accessibles depuis les jours de type « lien »
 jeux.css         Styles de la page des jeux
@@ -28,6 +28,7 @@ Les dossiers `images/cases/` et `images/decor/` ne sont pas nécessaires au fonc
 - Le calendrier présente **une case à la fois** et s’ouvre sur le numéro correspondant au jour du mois (limité aux cases 1 à 24). Les flèches, les touches ← et →, ou un balayage horizontal sur écran tactile permettent de changer de case.
 - Le titre, le bouton musical et la case sont placés en proportion du fond : ils gardent la même position par rapport au décor quand l’image se redimensionne selon l’écran.
 - Une case est déverrouillée à partir de son jour en décembre de l’année courante. Le paramètre `?date=AAAA-MM-JJ` permet de simuler une date, par exemple `?date=2026-12-07`.
+- Le mode développeur donne accès à toutes les cases avec `?dev=1`, par exemple `/?dev=1` ou `/?date=2026-12-07&dev=1`. Il affiche aussi le bouton de réinitialisation.
 - Cliquer sur une case déverrouillée joue l’animation du cadeau, enregistre son ouverture dans le stockage local du navigateur, puis affiche son contenu.
 - Les ouvertures sont conservées dans `localStorage` sous la clé `calendrier-avent-ouvert-2026`. Elles sont propres au navigateur et à l’appareil utilisés.
 - La musique ne démarre qu’après un clic sur le bouton musical. Les fichiers de `sons/music/` passent dans un ordre aléatoire, sans répétition avant que tous les morceaux aient joué. Le bouton permet aussi de mettre la lecture en pause ou de la reprendre. Les effets de `sons/foley/` accompagnent le changement de case et l’ouverture d’un cadeau.
@@ -50,7 +51,7 @@ Modifiez `contenu.json`, qui contient un tableau d’objets avec une entrée par
 ]
 ```
 
-`jour` doit être un nombre de 1 à 24. `titre`, `texte`, `image` et `lien` sont facultatifs. Le script affiche le titre, le texte, l’image et le lien fournis, quel que soit le champ `type`. Chaque jour de type `lien` ouvre son propre jeu dans `jeux.html` : memory (jour 2), réflexes (jour 6), quiz (jour 10), suite lumineuse (jour 14), tri des cadeaux (jour 18) ou mot mystère (jour 22). Il n’y a pas de menu de sélection; le numéro du jour détermine le jeu affiché. Les liens internes s’ouvrent dans l’onglet actuel et les URL externes dans un nouvel onglet. Les images doivent être accessibles par un chemin relatif au site; un visuel de remplacement s’affiche si une image ne peut pas être chargée.
+`jour` doit être un nombre de 1 à 24. `titre`, `texte`, `image` et `lien` sont facultatifs. Le script affiche le titre, le texte, l’image et le lien fournis, quel que soit le champ `type`. Chaque jour de type `lien` ouvre son propre jeu dans `jeux.html` : memory (jour 2), réflexes (jour 6), quiz (jour 10), suite lumineuse (jour 14), tri des cadeaux (jour 18) ou mot mystère (jour 22). Il n’y a pas de menu de sélection; le numéro du jour détermine le jeu affiché. Les mini-jeux s’ouvrent dans une fenêtre plein écran au-dessus du calendrier, qui reste actif pendant la partie. Le bouton « Retour au calendrier » ou Échap ferme le jeu. Les URL externes s’ouvrent dans un nouvel onglet. Les images doivent être accessibles par un chemin relatif au site; un visuel de remplacement s’affiche si une image ne peut pas être chargée.
 
 Les textes d’exemple peuvent être remplacés avant publication par des contenus personnels.
 

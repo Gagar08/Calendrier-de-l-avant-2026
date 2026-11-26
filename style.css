@@ -12,22 +12,27 @@
   --police-base: "Silkscreen", monospace;
   --police-titre: "Press Start 2P", "Silkscreen", monospace;
 }
-
 * {
   box-sizing: border-box;
 }
 
 html {
+  height: 100%;
   scroll-behavior: smooth;
+  overscroll-behavior: none;
 }
 
 body {
   margin: 0;
   min-height: 100vh;
+  height: 100vh;
+  height: 100dvh;
+  min-height: 0;
   padding: 0;
   display: grid;
   place-items: center;
-  overflow-x: hidden;
+  overflow: hidden;
+  overscroll-behavior: none;
   background-color: var(--couleur-fond);
   background-image:
     linear-gradient(180deg, rgba(18, 11, 23, 0.2), rgba(30, 18, 37, 0.32)),
@@ -51,6 +56,7 @@ img {
 button,
 a {
   font: inherit;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .page-shell {
@@ -58,6 +64,8 @@ a {
   container-type: inline-size;
   width: min(100vw, 53.15vh);
   height: min(100vh, 188.16vw);
+  width: min(100vw, 53.15dvh);
+  height: min(100dvh, 188.16vw);
   padding: 0;
 }
 
@@ -90,12 +98,20 @@ a {
   background-image: url("images/buttons/stop_button.png");
 }
 
-.music-toggle:active:not(.is-playing) {
+.music-toggle:active:not(.is-playing),
+.music-toggle.is-pressing-play {
   background-image: url("images/buttons/play_butto_pressedn.png");
 }
 
-.music-toggle.is-playing:active {
+.music-toggle.is-playing:active,
+.music-toggle.is-pressing-stop {
   background-image: url("images/buttons/stop_button_pressed.png");
+}
+
+.music-toggle:active,
+.music-toggle.is-pressing-play,
+.music-toggle.is-pressing-stop {
+  transform: translateY(2px) scale(0.92);
 }
 
 .music-toggle:focus-visible {
@@ -405,6 +421,7 @@ h1 {
 .modal-close:active,
 .modal-close.is-pressed {
   background-image: url("images/buttons/quit_button_pressed.png");
+  transform: translateY(2px) scale(0.9);
 }
 
 .modal-close:focus-visible {
@@ -464,6 +481,28 @@ h1 {
   border: 2px solid rgba(92, 62, 10, 0.55);
 }
 
+.modal-link-game {
+  width: min(76px, 30vw);
+  aspect-ratio: 38 / 18;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: url("images/buttons/play_game.png") center / 100% 100% no-repeat;
+  image-rendering: pixelated;
+  font-size: 0;
+}
+
+.modal-link-game:active,
+.modal-link-game.is-pressed {
+  background-image: url("images/buttons/play_game_pressed.png");
+  transform: translateY(3px) scale(0.94);
+}
+
+.modal-link-game:focus-visible {
+  outline: 2px solid var(--couleur-texte-fonce);
+  outline-offset: 3px;
+}
+
 .modal-fallback {
   min-height: 130px;
   display: grid;
@@ -476,6 +515,25 @@ h1 {
   border-radius: 8px;
 }
 
+.game-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: none;
+  background: var(--couleur-fond);
+}
+
+.game-overlay.is-open {
+  display: block;
+}
+
+.game-overlay iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: var(--couleur-fond);
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -486,10 +544,3 @@ h1 {
     scroll-behavior: auto !important;
   }
 }
-
-@media (max-width: 600px) {
-  .page-header {
-    top: 1.2%;
-  }
-}
-
