@@ -20,10 +20,9 @@
   },
   {
     "jour": 4,
-    "type": "image",
-    "titre": "Souvenir visuel",
-    "texte": "Une petite scène de vacances à garder en mémoire.",
-    "image": "images/cases/04.webp"
+    "type": "texte",
+    "titre": "La devinette d'hiver",
+    "texte": "Fais deviner ce mot : je tombe du ciel sans faire de bruit, je couvre les toits et je fonds dans les mains. Qui suis-je ?"
   },
   {
     "jour": 5,
@@ -46,10 +45,9 @@
   },
   {
     "jour": 8,
-    "type": "image",
-    "titre": "Photo de famille",
-    "texte": "Une image à remplacer par un souvenir plus personnel.",
-    "image": "images/cases/08.webp"
+    "type": "texte",
+    "titre": "La chanson du moment",
+    "texte": "Choisis une chanson qui te met de bonne humeur et partage-la avec quelqu'un. Bonus : raconte pourquoi tu l'aimes."
   },
   {
     "jour": 9,
@@ -72,10 +70,9 @@
   },
   {
     "jour": 12,
-    "type": "image",
-    "titre": "Souvenir d'hiver",
-    "texte": "À remplacer par une photo ou un montage personnel.",
-    "image": "images/cases/12.webp"
+    "type": "texte",
+    "titre": "Une pause réconfortante",
+    "texte": "Prépare-toi une boisson chaude, installe-toi confortablement et prends cinq minutes sans regarder ton téléphone."
   },
   {
     "jour": 13,
@@ -98,10 +95,9 @@
   },
   {
     "jour": 16,
-    "type": "image",
-    "titre": "Photo à ajouter",
-    "texte": "Ajoute ici une image pour personnaliser l'expérience.",
-    "image": "images/cases/16.webp"
+    "type": "texte",
+    "titre": "La mission gentillesse",
+    "texte": "Envoie un petit mot à quelqu'un pour lui dire une qualité que tu apprécies chez lui."
   },
   {
     "jour": 17,
@@ -112,8 +108,8 @@
   {
     "jour": 18,
     "type": "lien",
-    "titre": "Le tri des cadeaux",
-    "texte": "Sélectionnez cinq cadeaux parmi vingt objets. Chaque erreur coûte trois secondes.",
+    "titre": "Le code secret",
+    "texte": "Retrouve la combinaison de quatre symboles grâce aux indices de position.",
     "lien": "jeux.html?jour=18"
   },
   {
@@ -124,10 +120,10 @@
   },
   {
     "jour": 20,
-    "type": "image",
-    "titre": "Petit souvenir",
-    "texte": "Image temporaire à remplacer par un moment précis.",
-    "image": "images/cases/20.webp"
+    "type": "lien",
+    "titre": "Le puzzle de Noël",
+    "texte": "Reconstitue l'image en faisant glisser les pièces voisines de la case vide.",
+    "lien": "jeux.html?jour=20"
   },
   {
     "jour": 21,
@@ -150,9 +146,8 @@
   },
   {
     "jour": 24,
-    "type": "image",
-    "titre": "Le dernier jour",
-    "texte": "Le grand final du calendrier : un instant à célébrer, à savourer et à garder en mémoire.",
-    "image": "images/cases/24.webp"
+    "type": "texte",
+    "titre": "Joyeux Noël !",
+    "texte": "Tu es arrivé au dernier jour du calendrier. Je te souhaite une journée pleine de douceur, de rires et de beaux moments avec les personnes que tu aimes."
   }
 ]

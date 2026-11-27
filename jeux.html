@@ -13,7 +13,7 @@
   </head>
   <body>
     <main class="games-page">
-      <a class="back-link" href="index.html">← Retour au calendrier</a>
+      <a class="back-link" href="index.html">Retour au calendrier</a>
       <header class="games-header">
         <p class="eyebrow">Calendrier de l’Avent</p>
         <h1>Épreuves de décembre</h1>
@@ -30,10 +30,19 @@
 
       <section class="game-panel" id="game-reaction" aria-labelledby="reaction-title" hidden>
         <h2 id="reaction-title">Test de réflexes</h2>
-        <p>15 secondes. Cliquez dès que la cible apparaît et visez le meilleur score.</p>
+        <p>15 secondes. Touche les cadeaux, évite les autres personnages et vise le meilleur score. Chaque erreur coûte 2 secondes.</p>
         <div id="reaction-area" class="reaction-area">
           <button id="reaction-target" class="reaction-target" type="button" aria-label="Attraper le cadeau" hidden>
             <img src="images/mini-jeux/cadeau.png" alt="" />
+          </button>
+          <button class="reaction-decoy" type="button" aria-label="Ne pas toucher le bonhomme de neige" hidden>
+            <img src="images/mini-jeux/bonhome.png" alt="" />
+          </button>
+          <button class="reaction-decoy" type="button" aria-label="Ne pas toucher la cloche" hidden>
+            <img src="images/mini-jeux/cloche.png" alt="" />
+          </button>
+          <button class="reaction-decoy" type="button" aria-label="Ne pas toucher le renne" hidden>
+            <img src="images/mini-jeux/rene.png" alt="" />
           </button>
           <span class="reaction-hint">La cible apparaîtra ici</span>
         </div>
@@ -66,15 +75,23 @@
         <button id="sequence-start" class="action-button" type="button">Lancer la partie</button>
       </section>
 
-      <section class="game-panel" id="game-sort" aria-labelledby="sort-title" hidden>
-        <h2 id="sort-title">Le tri des cadeaux</h2>
-        <p>Sélectionnez cinq cadeaux parmi vingt objets. Chaque erreur coûte trois secondes.</p>
-        <div id="sorting-board" class="sorting-board" aria-label="Cadeaux à trier"></div>
-        <div class="reaction-info">
-          <p id="sorting-status" class="game-status" aria-live="polite">Lancez la partie pour commencer.</p>
-          <p id="sorting-time" class="game-status">Temps : 20 s</p>
-        </div>
-        <button id="sorting-start" class="action-button" type="button">Lancer la partie</button>
+      <section class="game-panel" id="game-code" aria-labelledby="code-title" hidden>
+        <h2 id="code-title">Le code secret</h2>
+        <p>Retrouve la combinaison de quatre symboles. Les indices te diront combien sont bien placés ou présents ailleurs.</p>
+        <div id="code-slots" class="code-slots" aria-label="Ta combinaison"></div>
+        <p id="code-progress" class="game-status" aria-live="polite"></p>
+        <button id="code-submit" class="action-button" type="button">Vérifier le code</button>
+        <p id="code-status" class="game-status" aria-live="polite">Appuie sur chaque symbole pour le changer.</p>
+        <ol id="code-history" class="code-history" aria-label="Historique des tentatives"></ol>
+        <button id="code-restart" class="action-button" type="button" hidden>Nouvelle partie</button>
+      </section>
+
+      <section class="game-panel" id="game-puzzle" aria-labelledby="puzzle-title" hidden>
+        <h2 id="puzzle-title">Le puzzle de Noël</h2>
+        <p>Reconstitue l’image en faisant glisser les pièces voisines de la case vide.</p>
+        <div id="puzzle-board" class="puzzle-board" role="group" aria-label="Puzzle coulissant de neuf cases"></div>
+        <p id="puzzle-status" class="game-status" aria-live="polite"></p>
+        <button id="puzzle-shuffle" class="action-button" type="button">Mélanger</button>
       </section>
 
       <section class="game-panel" id="game-word" aria-labelledby="word-title" hidden>

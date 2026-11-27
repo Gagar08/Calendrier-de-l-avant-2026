@@ -13,6 +13,22 @@ const ASSET_CONFIG = {
   giftAnimation: "images/gift/gift-animation.gif",
   giftOpen: "images/gift/gift-open.png",
 };
+const GIFT_ASSETS_BY_DAY = {
+  24: {
+    closed: "images/gift/gift-closed_24.png",
+    animation: "images/gift/gift-animation_24.gif",
+    open: "images/gift/gift-open_24.png",
+  },
+};
+
+function getGiftAssets(dayNumber) {
+  const specialAssets = GIFT_ASSETS_BY_DAY[dayNumber];
+  return specialAssets || {
+    closed: ASSET_CONFIG.giftClosed,
+    animation: ASSET_CONFIG.giftAnimation,
+    open: ASSET_CONFIG.giftOpen,
+  };
+}
 
 const STORAGE_KEY = "calendrier-avent-ouvert-2026";
 const CONTENT_PATH = "contenu.json";
@@ -45,6 +61,7 @@ const nextCaseEl = document.getElementById("next-case");
 const casePositionEl = document.getElementById("case-position");
 const modalEl = document.getElementById("modal");
 const modalContentEl = document.getElementById("modal-content");
+const modalDayEl = document.getElementById("modal-day");
 const lockMessageEl = document.getElementById("lock-message");
 const musicToggleEl = document.getElementById("music-toggle");
 const devResetEl = document.getElementById("dev-reset");
@@ -53,6 +70,7 @@ const gameFrameEl = document.getElementById("game-frame");
 const isLocalDevelopment = ["localhost", "127.0.0.1", "[::1]"].includes(window.location.hostname);
 const isDeveloperMode = isLocalDevelopment || new URLSearchParams(window.location.search).get("dev") === "1";
 const musicEl = new Audio();
+musicEl.volume = 0.25;
 let currentTrackIndex = upcomingTrackIndices.pop();
 
 let contenuParJour = [];
@@ -240,7 +258,8 @@ function createCase(dayNumber) {
   }
 
   button.appendChild(inner);
-  setCaseGift(button, isOpen ? ASSET_CONFIG.giftOpen : ASSET_CONFIG.giftClosed);
+  const giftAssets = getGiftAssets(dayNumber);
+  setCaseGift(button, isOpen ? giftAssets.open : giftAssets.closed);
 
   button.addEventListener("click", () => handleCaseClick(dayNumber, button));
   return button;
@@ -344,11 +363,7 @@ function openModalForDay(dayNumber) {
 
   const contentNode = document.createElement("div");
   contentNode.className = "modal-content-inner";
-
-  const kicker = document.createElement("p");
-  kicker.className = "modal-kicker";
-  kicker.textContent = `Jour ${dayNumber}`;
-  contentNode.appendChild(kicker);
+  modalDayEl.textContent = `Jour ${dayNumber}`;
 
   const title = document.createElement("h2");
   title.id = "modal-title";
@@ -438,7 +453,7 @@ function handleCaseClick(dayNumber, button) {
   playFoley(FOLEY_SOUNDS.openGift);
   previousCaseEl.disabled = true;
   nextCaseEl.disabled = true;
-  setCaseGift(button, ASSET_CONFIG.giftAnimation);
+  setCaseGift(button, getGiftAssets(dayNumber).animation);
 
   setTimeout(() => {
     if (!isDayOpen(dayNumber)) {

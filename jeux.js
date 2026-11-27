@@ -19,7 +19,8 @@ const gameByDay = {
   6: "reaction",
   10: "quiz",
   14: "sequence",
-  18: "sort",
+  18: "code",
+  20: "puzzle",
   22: "word",
 };
 const selectedGame = gameByDay[requestedDay];
@@ -127,23 +128,56 @@ startMemory();
 // Réflexes : touche la cible aussi souvent que possible en 15 secondes.
 const reactionArea = document.getElementById("reaction-area");
 const reactionTarget = document.getElementById("reaction-target");
+const reactionDecoys = Array.from(reactionArea.querySelectorAll(".reaction-decoy"));
 const reactionHint = reactionArea.querySelector(".reaction-hint");
 const reactionScore = document.getElementById("reaction-score");
 const reactionTime = document.getElementById("reaction-time");
 const reactionStart = document.getElementById("reaction-start");
 let reactionInterval = null;
+let reactionMoveInterval = null;
 let reactionPoints = 0;
 let secondsLeft = 15;
 
-function moveReactionTarget() {
-  const maxLeft = Math.max(0, reactionArea.clientWidth - reactionTarget.offsetWidth);
-  const maxTop = Math.max(0, reactionArea.clientHeight - reactionTarget.offsetHeight);
-  reactionTarget.style.left = `${Math.random() * maxLeft}px`;
-  reactionTarget.style.top = `${Math.random() * maxTop}px`;
+function moveReactionTargets() {
+  const targets = [reactionTarget, ...reactionDecoys];
+  const occupied = [];
+
+  targets.forEach((target) => {
+    const maxLeft = Math.max(0, reactionArea.clientWidth - target.offsetWidth);
+    const maxTop = Math.max(0, reactionArea.clientHeight - target.offsetHeight);
+    let position = { left: 0, top: 0 };
+
+    for (let attempt = 0; attempt < 40; attempt += 1) {
+      position = { left: Math.random() * maxLeft, top: Math.random() * maxTop };
+      const overlaps = occupied.some((other) => (
+        position.left < other.left + target.offsetWidth
+        && position.left + target.offsetWidth > other.left
+        && position.top < other.top + target.offsetHeight
+        && position.top + target.offsetHeight > other.top
+      ));
+      if (!overlaps) break;
+    }
+
+    target.style.left = `${position.left}px`;
+    target.style.top = `${position.top}px`;
+    occupied.push({ ...position, width: target.offsetWidth, height: target.offsetHeight });
+  });
+}
+
+function finishReactionGame() {
+  window.clearInterval(reactionInterval);
+  window.clearInterval(reactionMoveInterval);
+  reactionTarget.hidden = true;
+  reactionDecoys.forEach((decoy) => { decoy.hidden = true; });
+  reactionHint.hidden = false;
+  reactionStart.disabled = false;
+  reactionStart.textContent = "Nouvelle tentative";
+  reactionScore.textContent = `Manche terminée · Score : ${reactionPoints}`;
 }
 
 reactionStart.addEventListener("click", () => {
   window.clearInterval(reactionInterval);
+  window.clearInterval(reactionMoveInterval);
   reactionPoints = 0;
   secondsLeft = 15;
   reactionScore.textContent = "Score : 0";
@@ -151,19 +185,16 @@ reactionStart.addEventListener("click", () => {
   reactionStart.disabled = true;
   reactionStart.textContent = "Partie en cours…";
   reactionTarget.hidden = false;
+  reactionDecoys.forEach((decoy) => { decoy.hidden = false; });
   reactionHint.hidden = true;
-  moveReactionTarget();
+  moveReactionTargets();
+  reactionMoveInterval = window.setInterval(moveReactionTargets, 2000);
 
   reactionInterval = window.setInterval(() => {
     secondsLeft -= 1;
     reactionTime.textContent = `Temps : ${secondsLeft} s`;
     if (secondsLeft <= 0) {
-      window.clearInterval(reactionInterval);
-      reactionTarget.hidden = true;
-      reactionHint.hidden = false;
-      reactionStart.disabled = false;
-      reactionStart.textContent = "Nouvelle tentative";
-      reactionScore.textContent = `Manche terminée · Score : ${reactionPoints}`;
+      finishReactionGame();
     }
   }, 1000);
 });
@@ -172,7 +203,18 @@ reactionTarget.addEventListener("click", () => {
   if (reactionTarget.hidden || secondsLeft <= 0) return;
   reactionPoints += 1;
   reactionScore.textContent = `Score : ${reactionPoints}`;
-  moveReactionTarget();
+  moveReactionTargets();
+});
+
+reactionDecoys.forEach((decoy) => {
+  decoy.addEventListener("click", () => {
+    if (decoy.hidden || secondsLeft <= 0) return;
+    secondsLeft = Math.max(0, secondsLeft - 2);
+    reactionTime.textContent = `Temps : ${secondsLeft} s`;
+    reactionScore.textContent = `Faux personnage ! Score : ${reactionPoints}`;
+    if (secondsLeft === 0) finishReactionGame();
+    else moveReactionTargets();
+  });
 });
 
 // Quiz de logique et de déduction.
@@ -316,87 +358,235 @@ sequenceButtons.forEach((button) => button.addEventListener("click", () => {
 }));
 sequenceStart.addEventListener("click", startSequence);
 
-// Tri rapide : trouve cinq cadeaux parmi vingt sprites.
-const sortingBoard = document.getElementById("sorting-board");
-const sortingStatus = document.getElementById("sorting-status");
-const sortingTime = document.getElementById("sorting-time");
-const sortingStart = document.getElementById("sorting-start");
-const giftSprite = { name: "Cadeau", src: "images/mini-jeux/cadeau.png", isGift: true };
-const sortingCharacters = [
+// Code secret : déduis une combinaison de quatre symboles grâce aux indices.
+const codeSymbols = [
   { name: "Bonhomme de neige", src: "images/mini-jeux/bonhome.png" },
+  { name: "Cadeau", src: "images/mini-jeux/cadeau.png" },
   { name: "Cloche", src: "images/mini-jeux/cloche.png" },
   { name: "Père Noël", src: "images/mini-jeux/pere_noel.png" },
   { name: "Renne", src: "images/mini-jeux/rene.png" },
 ];
-const sortingGifts = [
-  ...Array.from({ length: 5 }, () => ({ ...giftSprite })),
-  ...sortingCharacters.flatMap((character, index) => Array.from(
-    { length: index === sortingCharacters.length - 1 ? 3 : 4 },
-    () => ({ ...character, isGift: false }),
-  )),
-];
-let sortingTimer = null;
-let sortingSeconds = 20;
-let sortingFound = 0;
-let sortingActive = false;
+const codeSlotsEl = document.getElementById("code-slots");
+const codeProgressEl = document.getElementById("code-progress");
+const codeStatusEl = document.getElementById("code-status");
+const codeHistoryEl = document.getElementById("code-history");
+const codeSubmitEl = document.getElementById("code-submit");
+const codeRestartEl = document.getElementById("code-restart");
+let secretCode = [];
+let selectedCode = [0, 1, 2, 3];
+let codeAttempts = 0;
+let codeActive = true;
 
-function startSorting() {
-  window.clearInterval(sortingTimer);
-  sortingSeconds = 20;
-  sortingFound = 0;
-  sortingActive = true;
-  sortingTime.textContent = "Temps : 20 s";
-  sortingStatus.textContent = "Sélectionne les cinq cadeaux. Chaque erreur retire 3 secondes.";
-  sortingStart.disabled = true;
-  sortingBoard.replaceChildren();
-
-  shuffle(sortingGifts).forEach((item, index) => {
+function renderCodeSlots() {
+  codeSlotsEl.replaceChildren();
+  selectedCode.forEach((symbolIndex, slotIndex) => {
+    const symbol = codeSymbols[symbolIndex];
     const button = document.createElement("button");
-    button.className = `sorting-gift${item.isGift ? " is-gift" : ""}`;
     button.type = "button";
+    button.className = "code-slot";
+    button.setAttribute("aria-label", `Emplacement ${slotIndex + 1} : ${symbol.name}. Appuie pour changer.`);
+
     const image = document.createElement("img");
-    image.src = item.src;
-    image.alt = "";
+    image.src = symbol.src;
+    image.alt = symbol.name;
     button.appendChild(image);
-    button.style.setProperty("--gift-paper", item.isGift ? "#ad334b" : ["#286596", "#547d39", "#bc8b27"][index % 3]);
-    button.setAttribute("aria-label", item.name);
     button.addEventListener("click", () => {
-      if (!sortingActive || button.disabled) return;
-      button.disabled = true;
-      if (item.isGift) {
-        sortingFound += 1;
-        button.classList.add("is-found");
-        sortingStatus.textContent = `Cadeaux trouvés : ${sortingFound}/5.`;
-        if (sortingFound === 5) finishSorting(true);
-      } else {
-        button.classList.add("is-missed");
-        sortingSeconds = Math.max(0, sortingSeconds - 3);
-        sortingTime.textContent = `Temps : ${sortingSeconds} s`;
-        sortingStatus.textContent = "Mauvaise sélection : -3 secondes.";
-        if (sortingSeconds === 0) finishSorting(false);
-      }
+      if (!codeActive) return;
+      selectedCode[slotIndex] = (selectedCode[slotIndex] + 1) % codeSymbols.length;
+      renderCodeSlots();
+      codeSlotsEl.children[slotIndex]?.focus();
     });
-    sortingBoard.appendChild(button);
+    codeSlotsEl.appendChild(button);
+  });
+}
+
+function startCodeGame() {
+  secretCode = Array.from({ length: 4 }, () => Math.floor(Math.random() * codeSymbols.length));
+  selectedCode = [0, 1, 2, 3];
+  codeAttempts = 0;
+  codeActive = true;
+  codeHistoryEl.replaceChildren();
+  codeProgressEl.textContent = "Tentative 0 / 8";
+  codeStatusEl.textContent = "Appuie sur chaque symbole pour le changer.";
+  codeSubmitEl.disabled = false;
+  codeRestartEl.hidden = true;
+  renderCodeSlots();
+}
+
+function getCodeClues(guess) {
+  let wellPlaced = 0;
+  const secretRemainder = [];
+  const guessRemainder = [];
+
+  guess.forEach((symbol, index) => {
+    if (symbol === secretCode[index]) {
+      wellPlaced += 1;
+    } else {
+      secretRemainder.push(secretCode[index]);
+      guessRemainder.push(symbol);
+    }
   });
 
-  sortingTimer = window.setInterval(() => {
-    sortingSeconds -= 1;
-    sortingTime.textContent = `Temps : ${sortingSeconds} s`;
-    if (sortingSeconds <= 0) finishSorting(false);
-  }, 1000);
+  const misplaced = guessRemainder.reduce((count, symbol) => {
+    const matchIndex = secretRemainder.indexOf(symbol);
+    if (matchIndex < 0) return count;
+    secretRemainder.splice(matchIndex, 1);
+    return count + 1;
+  }, 0);
+
+  return { wellPlaced, misplaced };
 }
 
-function finishSorting(allFound) {
-  sortingActive = false;
-  window.clearInterval(sortingTimer);
-  sortingStart.disabled = false;
-  sortingStart.textContent = "Nouvelle tentative";
-  sortingStatus.textContent = allFound
-    ? "Objectif atteint : 5 cadeaux trouvés."
-    : `Temps écoulé : ${sortingFound}/5 cadeaux trouvés.`;
+function appendCodeAttempt(guess, clues) {
+  const row = document.createElement("li");
+  row.className = "code-attempt";
+  const symbols = document.createElement("div");
+  symbols.className = "code-attempt-symbols";
+
+  guess.forEach((symbolIndex) => {
+    const image = document.createElement("img");
+    image.src = codeSymbols[symbolIndex].src;
+    image.alt = codeSymbols[symbolIndex].name;
+    symbols.appendChild(image);
+  });
+
+  const result = document.createElement("span");
+  result.textContent = `${clues.wellPlaced} bien placé${clues.wellPlaced === 1 ? "" : "s"}, ${clues.misplaced} présent${clues.misplaced === 1 ? "" : "s"} ailleurs`;
+  row.append(symbols, result);
+  codeHistoryEl.prepend(row);
 }
 
-sortingStart.addEventListener("click", startSorting);
+function submitCodeGuess() {
+  if (!codeActive) return;
+
+  codeAttempts += 1;
+  const clues = getCodeClues(selectedCode);
+  appendCodeAttempt(selectedCode, clues);
+  codeProgressEl.textContent = `Tentative ${codeAttempts} / 8`;
+
+  if (clues.wellPlaced === secretCode.length) {
+    codeActive = false;
+    codeStatusEl.textContent = `Bravo, code trouvé en ${codeAttempts} tentative${codeAttempts === 1 ? "" : "s"} !`;
+  } else if (codeAttempts === 8) {
+    codeActive = false;
+    codeStatusEl.textContent = `Code manqué. La combinaison était : ${secretCode.map((index) => codeSymbols[index].name).join(", ")}.`;
+  } else {
+    codeStatusEl.textContent = `${clues.wellPlaced} bien placé${clues.wellPlaced === 1 ? "" : "s"} et ${clues.misplaced} présent${clues.misplaced === 1 ? "" : "s"} ailleurs.`;
+  }
+
+  if (!codeActive) {
+    codeSubmitEl.disabled = true;
+    codeRestartEl.hidden = false;
+    codeSlotsEl.querySelectorAll("button").forEach((button) => { button.disabled = true; });
+  }
+}
+
+codeSubmitEl.addEventListener("click", submitCodeGuess);
+codeRestartEl.addEventListener("click", startCodeGame);
+startCodeGame();
+
+// Puzzle coulissant : replace les huit tuiles dans leur ordre d'origine.
+const puzzleBoardEl = document.getElementById("puzzle-board");
+const puzzleStatusEl = document.getElementById("puzzle-status");
+const puzzleShuffleEl = document.getElementById("puzzle-shuffle");
+const puzzleImage = new Image();
+const puzzleSourceSize = 76;
+const puzzleCropTop = 18;
+let puzzleTiles = [];
+let puzzleMoves = 0;
+let puzzleSolved = false;
+
+function getPuzzleNeighbors(index) {
+  const row = Math.floor(index / 3);
+  const column = index % 3;
+  return [
+    ...(row > 0 ? [index - 3] : []),
+    ...(row < 2 ? [index + 3] : []),
+    ...(column > 0 ? [index - 1] : []),
+    ...(column < 2 ? [index + 1] : []),
+  ];
+}
+
+function renderPuzzle() {
+  puzzleBoardEl.replaceChildren();
+  puzzleTiles.forEach((tile, position) => {
+    if (tile === 8) {
+      const empty = document.createElement("div");
+      empty.className = "puzzle-empty";
+      empty.setAttribute("aria-label", "Case vide");
+      puzzleBoardEl.appendChild(empty);
+      return;
+    }
+
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "puzzle-tile";
+    button.setAttribute("aria-label", `Déplacer la pièce ${tile + 1}`);
+    const neighbors = getPuzzleNeighbors(position);
+    const emptyPosition = puzzleTiles.indexOf(8);
+    if (neighbors.includes(emptyPosition)) button.classList.add("is-movable");
+
+    const canvas = document.createElement("canvas");
+    canvas.width = 96;
+    canvas.height = 96;
+    canvas.setAttribute("aria-hidden", "true");
+    const context = canvas.getContext("2d");
+    if (context && puzzleImage.complete && puzzleImage.naturalWidth > 0) {
+      const sourceTileSize = puzzleSourceSize / 3;
+      context.imageSmoothingEnabled = false;
+      context.drawImage(
+        puzzleImage,
+        (tile % 3) * sourceTileSize,
+        puzzleCropTop + Math.floor(tile / 3) * sourceTileSize,
+        sourceTileSize,
+        sourceTileSize,
+        0,
+        0,
+        canvas.width,
+        canvas.height,
+      );
+    }
+    button.appendChild(canvas);
+    button.addEventListener("click", () => movePuzzleTile(position));
+    puzzleBoardEl.appendChild(button);
+  });
+
+  puzzleStatusEl.textContent = puzzleSolved
+    ? `Bravo ! Image reconstituée en ${puzzleMoves} déplacements.`
+    : `Déplacements : ${puzzleMoves}. Clique une pièce voisine du trou pour la déplacer.`;
+}
+
+function movePuzzleTile(position) {
+  if (puzzleSolved) return;
+  const emptyPosition = puzzleTiles.indexOf(8);
+  if (!getPuzzleNeighbors(position).includes(emptyPosition)) return;
+
+  [puzzleTiles[position], puzzleTiles[emptyPosition]] = [puzzleTiles[emptyPosition], puzzleTiles[position]];
+  puzzleMoves += 1;
+  puzzleSolved = puzzleTiles.every((tile, index) => tile === index);
+  renderPuzzle();
+}
+
+function shufflePuzzle() {
+  puzzleTiles = Array.from({ length: 9 }, (_, index) => index);
+  let emptyPosition = 8;
+  let previousPosition = -1;
+  for (let step = 0; step < 70; step += 1) {
+    const options = getPuzzleNeighbors(emptyPosition).filter((position) => position !== previousPosition);
+    const nextPosition = options[Math.floor(Math.random() * options.length)];
+    [puzzleTiles[emptyPosition], puzzleTiles[nextPosition]] = [puzzleTiles[nextPosition], puzzleTiles[emptyPosition]];
+    previousPosition = emptyPosition;
+    emptyPosition = nextPosition;
+  }
+  puzzleMoves = 0;
+  puzzleSolved = false;
+  renderPuzzle();
+}
+
+puzzleImage.addEventListener("load", renderPuzzle);
+puzzleImage.src = "images/fond/fond-noel.png";
+puzzleShuffleEl.addEventListener("click", shufflePuzzle);
+shufflePuzzle();
 
 // Décryptage : déchiffre six mots à partir d'un indice.
 const mysteryWords = [
