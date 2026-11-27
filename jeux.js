@@ -1,4 +1,17 @@
 const params = new URLSearchParams(window.location.search);
+const correctSound = new Audio("sons/foley/correct.mp3");
+const wrongSound = new Audio("sons/foley/wrong.mp3");
+function playCorrectSound() {
+  correctSound.pause();
+  correctSound.currentTime = 0;
+  correctSound.play().catch(() => {});
+}
+function playWrongSound() {
+  wrongSound.pause();
+  wrongSound.currentTime = 0;
+  wrongSound.play().catch(() => {});
+}
+
 document.querySelector(".back-link")?.addEventListener("click", (event) => {
   if (window.parent !== window) {
     event.preventDefault();
@@ -96,6 +109,7 @@ function revealMemoryCard(index, button) {
   const [first, second] = revealedCards;
   memoryMoves += 1;
   if (memoryCards[first.index].pair === memoryCards[second.index].pair) {
+    playCorrectSound();
     first.button.classList.add("is-matched");
     second.button.classList.add("is-matched");
     revealedCards = [];
@@ -107,6 +121,7 @@ function revealMemoryCard(index, button) {
   }
 
   memoryLocked = true;
+  playWrongSound();
   memoryStatus.textContent = "Paire incorrecte.";
   window.setTimeout(() => {
     revealedCards.forEach(({ index: hiddenIndex, button: hiddenButton }) => {
@@ -201,6 +216,7 @@ reactionStart.addEventListener("click", () => {
 
 reactionTarget.addEventListener("click", () => {
   if (reactionTarget.hidden || secondsLeft <= 0) return;
+  playCorrectSound();
   reactionPoints += 1;
   reactionScore.textContent = `Score : ${reactionPoints}`;
   moveReactionTargets();
@@ -209,6 +225,7 @@ reactionTarget.addEventListener("click", () => {
 reactionDecoys.forEach((decoy) => {
   decoy.addEventListener("click", () => {
     if (decoy.hidden || secondsLeft <= 0) return;
+    playWrongSound();
     secondsLeft = Math.max(0, secondsLeft - 2);
     reactionTime.textContent = `Temps : ${secondsLeft} s`;
     reactionScore.textContent = `Faux personnage ! Score : ${reactionPoints}`;
@@ -265,10 +282,12 @@ function answerQuiz(selectedButton, answerIndex) {
   const answerButtons = Array.from(quizAnswers.querySelectorAll("button"));
   answerButtons.forEach((button) => { button.disabled = true; });
   if (answerIndex === correctIndex) {
+    playCorrectSound();
     quizPoints += 1;
     selectedButton.classList.add("is-correct");
     quizStatus.textContent = "Réponse exacte.";
   } else {
+    playWrongSound();
     selectedButton.classList.add("is-wrong");
     answerButtons[correctIndex].classList.add("is-correct");
     quizStatus.textContent = "Réponse incorrecte.";
@@ -339,11 +358,13 @@ sequenceButtons.forEach((button) => button.addEventListener("click", () => {
   button.classList.add("is-lit");
   window.setTimeout(() => button.classList.remove("is-lit"), 180);
   if (pressedColor !== sequence[sequenceStep]) {
+    playWrongSound();
     sequenceStatus.textContent = "Erreur de séquence. Lancez une nouvelle partie pour réessayer.";
     sequenceRound = 0;
     sequenceButtons.forEach((item) => { item.disabled = true; });
     return;
   }
+  playCorrectSound();
   sequenceStep += 1;
   if (sequenceStep < sequence.length) return;
   if (sequenceRound === 8) {
@@ -465,12 +486,15 @@ function submitCodeGuess() {
   codeProgressEl.textContent = `Tentative ${codeAttempts} / 8`;
 
   if (clues.wellPlaced === secretCode.length) {
+    playCorrectSound();
     codeActive = false;
     codeStatusEl.textContent = `Bravo, code trouvé en ${codeAttempts} tentative${codeAttempts === 1 ? "" : "s"} !`;
   } else if (codeAttempts === 8) {
+    playWrongSound();
     codeActive = false;
     codeStatusEl.textContent = `Code manqué. La combinaison était : ${secretCode.map((index) => codeSymbols[index].name).join(", ")}.`;
   } else {
+    playWrongSound();
     codeStatusEl.textContent = `${clues.wellPlaced} bien placé${clues.wellPlaced === 1 ? "" : "s"} et ${clues.misplaced} présent${clues.misplaced === 1 ? "" : "s"} ailleurs.`;
   }
 
@@ -559,11 +583,15 @@ function renderPuzzle() {
 function movePuzzleTile(position) {
   if (puzzleSolved) return;
   const emptyPosition = puzzleTiles.indexOf(8);
-  if (!getPuzzleNeighbors(position).includes(emptyPosition)) return;
+  if (!getPuzzleNeighbors(position).includes(emptyPosition)) {
+    playWrongSound();
+    return;
+  }
 
   [puzzleTiles[position], puzzleTiles[emptyPosition]] = [puzzleTiles[emptyPosition], puzzleTiles[position]];
   puzzleMoves += 1;
   puzzleSolved = puzzleTiles.every((tile, index) => tile === index);
+  if (puzzleSolved) playCorrectSound();
   renderPuzzle();
 }
 
@@ -621,6 +649,7 @@ wordForm.addEventListener("submit", (event) => {
   event.preventDefault();
   const answer = wordAnswer.value.trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase();
   if (answer !== mysteryWords[wordIndex].word) {
+    playWrongSound();
     wordStatus.textContent = "Réponse incorrecte. Réessayez.";
     wordAnswer.select();
     return;
@@ -628,6 +657,7 @@ wordForm.addEventListener("submit", (event) => {
 
   wordAnswer.disabled = true;
   wordForm.querySelector("button").disabled = true;
+  playCorrectSound();
   if (wordIndex === mysteryWords.length - 1) {
     wordProgress.textContent = "Terminé !";
     scrambledWord.textContent = "Les six mots sont déchiffrés.";

@@ -1,4 +1,2 @@
-*.gif
 .DS_Store
 
-!images/mini-jeux/*.png

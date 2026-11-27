@@ -21,14 +21,14 @@
   {
     "jour": 4,
     "type": "texte",
-    "titre": "La devinette d'hiver",
-    "texte": "Fais deviner ce mot : je tombe du ciel sans faire de bruit, je couvre les toits et je fonds dans les mains. Qui suis-je ?"
+    "titre": "La première neige",
+    "texte": "Le soir, les flocons ont recouvert le jardin. Au matin, le monde semblait neuf et tout silencieux."
   },
   {
     "jour": 5,
     "type": "texte",
-    "titre": "Défi du jour",
-    "texte": "Fais un vœu pour le mois à venir et écris-le sur un petit papier. La magie commence souvent par un geste simple."
+    "titre": "Un souhait pour décembre",
+    "texte": "Que ce mois t'apporte de beaux moments, des rires partagés et de jolies surprises."
   },
   {
     "jour": 6,
@@ -46,14 +46,14 @@
   {
     "jour": 8,
     "type": "texte",
-    "titre": "La chanson du moment",
-    "texte": "Choisis une chanson qui te met de bonne humeur et partage-la avec quelqu'un. Bonus : raconte pourquoi tu l'aimes."
+    "titre": "Une mélodie de décembre",
+    "texte": "Certaines chansons ont le pouvoir de ramener un souvenir, une odeur de fête ou la chaleur d'une soirée passée ensemble."
   },
   {
     "jour": 9,
     "type": "texte",
-    "titre": "Petit défi",
-    "texte": "Passe 10 minutes à faire quelque chose de simple et agréable : thé, lecture, sieste ou promenade courte."
+    "titre": "La blague du renne",
+    "texte": "Pourquoi les rennes aiment-ils les vacances ? Parce qu'ils peuvent enfin se reposer sur leurs lauriers !"
   },
   {
     "jour": 10,
@@ -71,14 +71,14 @@
   {
     "jour": 12,
     "type": "texte",
-    "titre": "Une pause réconfortante",
-    "texte": "Prépare-toi une boisson chaude, installe-toi confortablement et prends cinq minutes sans regarder ton téléphone."
+    "titre": "Une pensée de saison",
+    "texte": "Même les journées les plus froides ont leur douceur : une lumière à la fenêtre, un rire dans la maison, un moment partagé."
   },
   {
     "jour": 13,
     "type": "texte",
-    "titre": "Mise en lumière",
-    "texte": "Aujourd'hui, prends le temps de remarquer ce qui est déjà beau autour de toi."
+    "titre": "La lumière des fêtes",
+    "texte": "Les petites lumières de décembre rappellent que même les nuits les plus longues peuvent être chaleureuses."
   },
   {
     "jour": 14,
@@ -96,14 +96,14 @@
   {
     "jour": 16,
     "type": "texte",
-    "titre": "La mission gentillesse",
-    "texte": "Envoie un petit mot à quelqu'un pour lui dire une qualité que tu apprécies chez lui."
+    "titre": "Le petit sapin",
+    "texte": "Au fond de la forêt, un petit sapin attendait Noël. Cette année, les étoiles s'étaient posées si bas qu'il pouvait les admirer toute la nuit."
   },
   {
     "jour": 17,
     "type": "texte",
-    "titre": "Question du jour",
-    "texte": "Que serait la meilleure journée de décembre pour toi ?"
+    "titre": "Un mot doux",
+    "texte": "N'oublie pas que ta présence rend les journées des personnes qui t'aiment un peu plus belles."
   },
   {
     "jour": 18,
@@ -128,8 +128,8 @@
   {
     "jour": 21,
     "type": "texte",
-    "titre": "Défi créatif",
-    "texte": "Écris une phrase qui te fait sourire aujourd'hui. Cela peut devenir un souvenir de fin d'année."
+    "titre": "La veille de Noël",
+    "texte": "La maison ralentit, les lumières brillent et l'impatience grandit. Que cette soirée soit paisible et pleine de chaleur."
   },
   {
     "jour": 22,
